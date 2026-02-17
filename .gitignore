@@ -2,6 +2,11 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+*.apk
+homebase2_BackUpThisFolder_ButDontShipItWithYourGame/
+homebase_BurstDebugInformation_DoNotShip/
+homebaset_BurstDebugInformation_DoNotShip/
+Assets/XR*
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
