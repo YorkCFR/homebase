@@ -20,7 +20,7 @@ public class Dialog : MonoBehaviour
     public GameObject choice;
     public GameObject instructions;
 
-    private WorldCreator worldCreator;
+    private InputHandler inputHandler;
    
 
     private string[] choices;
@@ -52,7 +52,7 @@ public class Dialog : MonoBehaviour
     {
         this.choices = choices;
 
-        this.title.GetComponent<TextMesh>().text = title;
+        SetDialogTitle(title);
         this.choice.GetComponent<TextMesh>().text = choices[0];
         this.currentChoice = 0;
         this.hasResponse = false;
@@ -62,11 +62,9 @@ public class Dialog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject directionalLight = GameObject.Find("Directional Light");
-        worldCreator = directionalLight.GetComponent<WorldCreator>();
+        GameObject cameraHolder = GameObject.Find("Camera Holder");
+        inputHandler = cameraHolder.GetComponent<InputHandler>();
 
-        string[] q = { "hello", "world" };
-        SetDialogElements("my new title", q);
         this.hasResponse = false;
     }
 
@@ -80,24 +78,25 @@ public class Dialog : MonoBehaviour
     // Update is called once per frame
     void Update()
     {  
+        Debug.Log("Dialog update called");
         if (this.hasResponse)
             return;
         
-        if(worldCreator.KeyUp)
+        if(inputHandler.KeyUp)
        // if (Input.GetKeyDown("up")|| Input.GetKeyDown(KeyCode.JoystickButton5))
         {
             this.currentChoice = (this.currentChoice + this.choices.Length - 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
-            worldCreator.InputReset();
+            inputHandler.InputReset();
         }
-        if(worldCreator.KeyDown)
+        if(inputHandler.KeyDown)
         //if(Input.GetKeyDown("down")|| Input.GetKeyDown(KeyCode.JoystickButton4))
         {
             this.currentChoice = (this.currentChoice + 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
-            worldCreator.InputReset();
+            inputHandler.InputReset();
         }
-        if(worldCreator.TriggerPressed)
+        if(inputHandler.TriggerPressed)
         //if(Input.GetKeyDown("x")|| Input.GetKeyDown(KeyCode.JoystickButton0))
         {
             Debug.Log("Got an input event");

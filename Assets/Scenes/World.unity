@@ -129,6 +129,8 @@ GameObject:
   m_Component:
   - component: {fileID: 234017184}
   - component: {fileID: 234017185}
+  - component: {fileID: 234017187}
+  - component: {fileID: 234017188}
   m_Layer: 0
   m_Name: Camera Holder
   m_TagString: Untagged
@@ -217,6 +219,35 @@ MonoBehaviour:
   KeyDown: 0
   Astate: 0
   Bstate: 0
+--- !u!114 &234017187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234017183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6bfda9487f4643548ae2a505896d5b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HomeBaseDriver
+  AdjustableTarget: {fileID: 0}
+  FixedTarget: {fileID: 0}
+  CameraHolder: {fileID: 0}
+  HomeBase: {fileID: 0}
+  Dialog: {fileID: 1194612033}
+--- !u!114 &234017188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234017183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f04af15bf804e298fc7423dc624f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopLevelMenu
 --- !u!1 &348180573
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,7 +504,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 740900840}
-  m_Text: Joystick to select, trigger to choose
+  m_Text: Thumbstick to select, trigger to choose
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
@@ -660,7 +691,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1194612033}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e6b5858bbaed4f93bb4cefc73a37e89, type: 3}
   m_Name: 
@@ -722,7 +753,7 @@ TextMesh:
   m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   m_Color:
     serializedVersion: 2
-    rgba: 4278716659
+    rgba: 4278190080
 --- !u!23 &1341768199
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1008,7 +1039,6 @@ GameObject:
   - component: {fileID: 1900725529}
   - component: {fileID: 1900725528}
   - component: {fileID: 1900725527}
-  - component: {fileID: 1900725530}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -1125,71 +1155,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 37, y: 10, z: 41}
---- !u!114 &1900725530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900725526}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 128bf058b4d094d0aad59e3c4f05083c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InputHandler
-  thumbstickAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Thumbstick
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 0320570b-cdd8-48b3-b394-2bf6912dff61
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -4253721963206143847, guid: 1062d4f4a72184708afde432ae836685, type: 3}
-  triggerAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Trigger
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 09fcba43-0795-4add-8d44-ff1513862413
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 8504998706842725031, guid: 1062d4f4a72184708afde432ae836685, type: 3}
-  aButton:
-    m_UseReference: 1
-    m_Action:
-      m_Name: A Button
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 12fe33a8-4dc1-41e9-8165-cbee9f2fdd98
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 1721183185598961830, guid: 1062d4f4a72184708afde432ae836685, type: 3}
-  bButton:
-    m_UseReference: 1
-    m_Action:
-      m_Name: B Button
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: fae5f8fa-8e69-443a-9940-afa48c72e55e
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 2914657509528042854, guid: 1062d4f4a72184708afde432ae836685, type: 3}
-  TriggerPressed: 0
-  KeyUp: 0
-  KeyDown: 0
-  Astate: 0
-  Bstate: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
