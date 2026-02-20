@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using UnityEngine.InputSystem;
-using Unity.XR.CoreUtils; // for XROrigin
-using System.IO;  // for USB access
+
 
 /**
  * Create the basic experimental environment.
@@ -33,7 +32,13 @@ public class HomeBaseDriver : MonoBehaviour
     public GameObject HomeBase;
     public GameObject Dialog;
 
+    private const int NSPHERES = 1200;                     // number of spheres (12,000)
+
     TopLevelMenu topLevelMenu;
+    private bool _doingMenu = true;
+    private Enums.Experiment _whichExperiment;
+    private SphereField _sf = null;
+    private long _startTime;
 
     /**
      * All of the non-scene texture objects are initially active (so they are easy to find). 
@@ -59,9 +64,17 @@ public class HomeBaseDriver : MonoBehaviour
     
     void Start()
     {
+        _startTime = (long)(DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds;
         GetGameObjects();
         Debug.Log("Getting toplevelmenu");
         topLevelMenu = GetComponent<TopLevelMenu>();
+
+        Debug.Log("Making spheres");
+        _sf = new SphereField(NSPHERES); // we regenerate locations as needed
+        _sf.EnableHomeBaseDisplay();
+        Debug.Log("Spheres made");
+        _doingMenu = true;
+        //_whichExperiment = TopLevelMenu.Experiment.None;
     }
 
     /**
@@ -78,22 +91,25 @@ public class HomeBaseDriver : MonoBehaviour
 
     private void DealWithMenu()
     {
-        TopLevelMenu.Experiment exp = topLevelMenu.DealWithMenu();
+        Enums.Experiment exp = topLevelMenu.DealWithMenu();
         switch(exp)
         {
-            case TopLevelMenu.Experiment.ControlForward:
+            case Enums.Experiment.ControlForward:
+                Debug.Log("*** do Control Forward");
+                _whichExperiment = Enums.Experiment.ControlForward;
+                _doingMenu = false;
+
+                break;
+            case Enums.Experiment.ControlBackward:
                 Debug.Log("*** do Control Forward");
                 break;
-            case TopLevelMenu.Experiment.ControlBackward:
-                Debug.Log("*** do Control Forward");
+            case Enums.Experiment.ControlRotation:
                 break;
-            case TopLevelMenu.Experiment.ControlRotation:
+            case Enums.Experiment.TriangleCompletion:
                 break;
-            case TopLevelMenu.Experiment.TriangleCompletion:
+            case Enums.Experiment.Waiting:
                 break;
-            case TopLevelMenu.Experiment.Waiting:
-                break;
-            case TopLevelMenu.Experiment.Quit:
+            case Enums.Experiment.Quit:
                 QuitPlaying();
                 break;
         }
@@ -105,6 +121,23 @@ public class HomeBaseDriver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DealWithMenu();
+
+        _sf.FLickerDisplay(0.0001f);
+
+        if(_doingMenu) {
+            DealWithMenu();
+        } else
+        {
+            switch (_whichExperiment)
+            {
+                case Enums.Experiment.ControlForward:
+                    LinearForward linearForward = GetComponent<LinearForward>();
+                    linearForward.DoAdjustLinearTarget(_startTime, _sf);
+                    break;
+                default:
+                    Debug.Log("EH?");
+                    break;
+            }
+        }
     }
 }

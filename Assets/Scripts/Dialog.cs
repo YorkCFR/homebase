@@ -59,6 +59,25 @@ public class Dialog : MonoBehaviour
         Debug.Log("set title to " + title);
     }
 
+    public void SetBackground(Material m)
+    {
+        int childCount = transform.childCount;
+        Debug.Log("There are n children n=" + childCount );
+        for(int i=0;i<childCount;i++)
+        {
+            GameObject child = transform.GetChild(i).gameObject;
+            Debug.Log("Child is " + child.name);
+            if("Background" == child.name)
+            {
+                Debug.Log("Material setting");
+                Renderer r = child.GetComponent<Renderer>();
+                r.material = m;
+                Debug.Log("Material set");
+                return;
+            }
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,7 +97,6 @@ public class Dialog : MonoBehaviour
     // Update is called once per frame
     void Update()
     {  
-        Debug.Log("Dialog update called");
         if (this.hasResponse)
             return;
         

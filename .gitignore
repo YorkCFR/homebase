@@ -4,6 +4,7 @@
 #
 *.apk
 homebase2_BackUpThisFolder_ButDontShipItWithYourGame/
+homebase_BackUpThisFolder_ButDontShipItWithYourGame/
 homebase_BurstDebugInformation_DoNotShip/
 homebaset_BurstDebugInformation_DoNotShip/
 Assets/XR*

@@ -4,7 +4,7 @@ using UnityEngine;
  * Do the top levels of the menu item
  *
  * Version Histroy
- * V1.0 - refactoring of the initial system<D
+ * V1.0 - refactoring of the initial system.
  *
  * Note that many classes are attached to the same parent object, simplifying some of
  * the effort here.
@@ -27,23 +27,14 @@ public class TopLevelMenu : MonoBehaviour
     };
     private UIState _uiState = UIState.Initialize;
 
-    public enum Experiment
-    {
-        ControlForward,
-        ControlBackward,
-        ControlRotation,
-        TriangleCompletion,
-        Waiting,
-        Quit,
-        None
-    };
-    private Experiment _confirmExperiment = Experiment.None; // note: Waiting is not valid for this
+    
+    private Enums.Experiment _confirmExperiment = Enums.Experiment.None; // note: Waiting is not valid for this
 
     public void Start()
     {
     }
  
-    public Experiment DealWithMenu()
+    public Enums.Experiment DealWithMenu()
     {
 
         Debug.Log("Dealing with menu");
@@ -61,7 +52,7 @@ public class TopLevelMenu : MonoBehaviour
                 _dialog.SetActive(true);
                 d.SetDialogElements("Choose Experiment", new string[] { "Control Experiments", "Triangle Completion Experiment", "Quit Homebase"});
                 _uiState = UIState.ControlOrTriangle;
-                return(Experiment.Waiting);
+                return(Enums.Experiment.Waiting);
             case UIState.ControlOrTriangle: 
                 int resp = d.GetResponse();
                 switch (resp)
@@ -69,44 +60,44 @@ public class TopLevelMenu : MonoBehaviour
                     case 0: 
                         d.SetDialogElements("Choose Control", new string[] { "Linear Forward Control", "Linear Backward Control", "Rotation Control" });
                         _uiState = UIState.SelectControl;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case 1:
                         d.SetDialogElements("Confirm Choice", new string[] {"Do 'Triangle Completion Experiment'", "Back"});
-                        _confirmExperiment = Experiment.TriangleCompletion;
+                        _confirmExperiment = Enums.Experiment.TriangleCompletion;
                         _uiState = UIState.ConfirmScreen;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case 2:
                         _uiState = UIState.Done;
-                        return(Experiment.Quit);
+                        return(Enums.Experiment.Quit);
                     case -1:
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                 }
                 Debug.Log("Not Reached (TopLevelMenu)");
-                return(Experiment.Waiting);
+                return(Enums.Experiment.Waiting);
             case UIState.SelectControl:
                 int resp2 = d.GetResponse();
                 switch (resp2)
                 {
                     case 0: 
                         d.SetDialogElements("Confirm Choice", new string[] {"Do Linear Forward Control Experiment", "Back"});
-                        _confirmExperiment = Experiment.ControlForward;
+                        _confirmExperiment = Enums.Experiment.ControlForward;
                         _uiState = UIState.ConfirmScreen;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case 1:
                         d.SetDialogElements("Confirm Choice", new string[] {"Do Linear Backward Control Experiment", "Back"});
-                        _confirmExperiment = Experiment.ControlBackward;
+                        _confirmExperiment = Enums.Experiment.ControlBackward;
                         _uiState = UIState.ConfirmScreen;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case 2:
                         d.SetDialogElements("Confirm Choice", new string[] {"Do Rotation Control Experiment", "Back"});
-                        _confirmExperiment = Experiment.ControlBackward;
+                        _confirmExperiment = Enums.Experiment.ControlBackward;
                         _uiState = UIState.ConfirmScreen;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case -1:
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                 }
                 Debug.Log("Not Reached (TopLevelMenu)");
-                return(Experiment.Waiting);
+                return(Enums.Experiment.Waiting);
             case UIState.ConfirmScreen:
                 int confirm = d.GetResponse();
                 switch(confirm)
@@ -118,14 +109,14 @@ public class TopLevelMenu : MonoBehaviour
                     case 1:
                         d.SetDialogElements("Choose Experiment", new string[] { "Control Experiments", "Triangle Completion Experiment", "Quit Homebase"});
                         _uiState = UIState.ControlOrTriangle;
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                     case -1:
-                        return(Experiment.Waiting);
+                        return(Enums.Experiment.Waiting);
                 }
                 Debug.Log("Not reached (TopLevel Menu)");
-                return(Experiment.Waiting);
+                return(Enums.Experiment.Waiting);
         }
         Debug.Log("Not reached (TopLevel Menu)");
-        return(Experiment.None);
+        return(Enums.Experiment.None);
     }
 }

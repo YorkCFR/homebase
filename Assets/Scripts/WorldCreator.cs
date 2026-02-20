@@ -11,7 +11,8 @@ using System.IO;  // for USB access
  * Copyright Michael Jenkin 2025, 2026
  * Version History
  * 
- * V2.1 - ensure output even if no user input
+ * V2.5 - Updates after the 17th of Feb
+ * V2.1 - ensure output even if no user input (?)
  * V2.0 - updated triangle completion task
  * V1.6 - Modifications to run in the HMD
  * V1.5 - Now with manual start between conditions
@@ -573,8 +574,8 @@ public class WorldCreator : MonoBehaviour
                 _adjustTarget.transform.position = new Vector3(0, 0, _targetDistance1 + _length1);
                 if(TriggerPressed) //if (Input.GetKeyDown("x"))
                 {
-                    _responseLog.Add(ResponseLog.LINEAR_TARGET, Time.time, _linear_conditions[_cond][0], -1000.0f, -1000.0f,
-                                     _linear_conditions[_cond][1], -1000.0f, _targetDistance1, -1000.0f, -1000.0f, -1000.0f, -1000.0f);
+                   // _responseLog.Add(ResponseLog.LINEAR_TARGET, Time.time, _linear_conditions[_cond][0], -1000.0f, -1000.0f,
+                   //                  _linear_conditions[_cond][1], -1000.0f, _targetDistance1, -1000.0f, -1000.0f, -1000.0f, -1000.0f);
                     _adjustTarget.SetActive(false);
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
@@ -706,8 +707,8 @@ public class WorldCreator : MonoBehaviour
             case ExperimentState.AdjustOrientation: // indicate orientation we just went through
                 if(TriggerPressed) //if (Input.GetKeyDown("x")) // make the hall appear
                 {
-                    _responseLog.Add(ResponseLog.LINEAR_TARGET, Time.time, -1000.0f, -1000.0f, _rotational_conditions[_cond][0],
-                                     _rotational_conditions[_cond][1], _rotational_conditions[_cond][2], -1000.0f, -1000.0f, _turnAngle, -1000.0f, -1000.0f);
+                   // _responseLog.Add(ResponseLog.LINEAR_TARGET, Time.time, -1000.0f, -1000.0f, _rotational_conditions[_cond][0],
+                   //                  _rotational_conditions[_cond][1], _rotational_conditions[_cond][2], -1000.0f, -1000.0f, _turnAngle, -1000.0f, -1000.0f);
 
                     _reticle.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                     _reticle.transform.position = new Vector3(0.0f, 0.0f, RETICLE_DISTANCE + _length1);
@@ -1039,8 +1040,8 @@ public class WorldCreator : MonoBehaviour
                 if(TriggerPressed) //if (Input.GetKeyDown("x"))
                 {
                     _reticle.SetActive(false);
-                    _responseLog.Add(ResponseLog.WHERE_DID_I_GO, Time.time, _triangle_conditions[_cond][0], _triangle_conditions[_cond][1], _triangle_conditions[_cond][2],
-                                     _triangle_conditions[_cond][3], _triangle_conditions[_cond][4], -1000.0f, -1000.0f, -1000.0f, _directionDistance, _directionAngle);
+                   // _responseLog.Add(ResponseLog.WHERE_DID_I_GO, Time.time, _triangle_conditions[_cond][0], _triangle_conditions[_cond][1], _triangle_conditions[_cond][2],
+                    //                 _triangle_conditions[_cond][3], _triangle_conditions[_cond][4], -1000.0f, -1000.0f, -1000.0f, _directionDistance, _directionAngle);
                     if (_cond < NTRIANG - 1)
                     {
                         _cond = _cond + 1;
@@ -1119,8 +1120,8 @@ public class WorldCreator : MonoBehaviour
 
 
         float triggerValue = triggerAction.action.ReadValue<float>();
-        //Debug.Log("Pre Triggervalue is " + triggerValue);
-        //Debug.Log("Pre LastTriggerPress is " + LastTriggerPress);
+        Debug.Log("Pre Triggervalue is " + triggerValue);
+        Debug.Log("Pre LastTriggerPress is " + LastTriggerPress);
         if(LastTriggerPress) {
             TriggerPressed = false;
             if(triggerValue <= 0.5f)
@@ -1134,13 +1135,13 @@ public class WorldCreator : MonoBehaviour
                 LastTriggerPress = true;
             }
         }
-        //Debug.Log("Post TriggerPressed is " + TriggerPressed);
-        //Debug.Log("Post LastTriggerPress is " + LastTriggerPress);
+        Debug.Log("Post TriggerPressed is " + TriggerPressed);
+        Debug.Log("Post LastTriggerPress is " + LastTriggerPress);
 
         Astate = aButton.action.ReadValue<float>() >0.5f;
-        //Debug.Log($" a button is {Astate}");
+        Debug.Log($" a button is {Astate}");
         Bstate = bButton.action.ReadValue<float>() > 0.5;;
-        //Debug.Log($"b button is {Bstate}");
+        Debug.Log($"b button is {Bstate}");
     }
 
     public void InputReset()

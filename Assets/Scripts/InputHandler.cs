@@ -30,9 +30,9 @@ public class InputHandler : MonoBehaviour
     private bool KeyDownOld = false;
 
     public bool Astate = false;
-    private bool AstateOld = false;
+    public bool AstateOld = false;
     public bool Bstate = false;
-    private bool BstateOld = false;
+    public bool BstateOld = false;
 
     private Vector2 ThumbstickValue = new Vector2(0.0f, 0.0f); 
     private bool UpDownReset = false;
@@ -45,7 +45,7 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
         Vector2 thumbstickValue = thumbstickAction.action.ReadValue<Vector2>();
-        Debug.Log("Thumbstick is " + thumbstickValue[0]);
+        //Debug.Log("Thumbstick is " + thumbstickValue[0]);
 
         if (thumbstickValue != Vector2.zero) 
         {
@@ -72,8 +72,8 @@ public class InputHandler : MonoBehaviour
 
 
         float triggerValue = triggerAction.action.ReadValue<float>();
-        Debug.Log("Pre Triggervalue is " + triggerValue);
-        Debug.Log("Pre LastTriggerPress is " + LastTriggerPress);
+        //Debug.Log("Pre Triggervalue is " + triggerValue);
+        //Debug.Log("Pre LastTriggerPress is " + LastTriggerPress);
         if(LastTriggerPress) {
             TriggerPressed = false;
             if(triggerValue <= 0.5f)
@@ -87,13 +87,13 @@ public class InputHandler : MonoBehaviour
                 LastTriggerPress = true;
             }
         }
-        Debug.Log("Post TriggerPressed is " + TriggerPressed);
-        Debug.Log("Post LastTriggerPress is " + LastTriggerPress);
+        //Debug.Log("Post TriggerPressed is " + TriggerPressed);
+        //Debug.Log("Post LastTriggerPress is " + LastTriggerPress);
 
         Astate = aButton.action.ReadValue<float>() >0.5f;
-        Debug.Log($" a button is {Astate}");
+        //Debug.Log($" a button is {Astate}");
         Bstate = bButton.action.ReadValue<float>() > 0.5;;
-        Debug.Log($"b button is {Bstate}");
+        //Debug.Log($"b button is {Bstate}");
     }
 
     public void InputReset()
