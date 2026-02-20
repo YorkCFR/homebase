@@ -7,6 +7,7 @@ using UnityEngine;
 /**
  * Record and then dump out a set of responses
  *
+ * Version
  * V2.0 Now its just a list of strings. This simplifies using it elsewhere
  * V1.0 borrowed from the TrialLog code from the SMUG project.
  *
@@ -31,7 +32,16 @@ public class ResponseLog
         _log.Add(s);
     }
     
-   public void Add(int cond, float turnStart, float distance, float rotation, bool pitch, float spinDir, 
+
+    public void AddBackward(int cond, float waitStart, float distance, bool pitch, float spinDir, 
+                    float targetDistanceInit, float targetDistance)
+    {
+        string s;
+
+        s = $"{cond}, {waitStart}, {distance}, {pitch}, {spinDir}, {targetDistanceInit}, {targetDistance}";
+        Add(s);
+    }
+   public void AddForward(int cond, float turnStart, float distance, float rotation, bool pitch, float spinDir, 
                    float targetDistanceInit, float targetDistance)
     {
         string s;

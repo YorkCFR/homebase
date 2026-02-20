@@ -7,26 +7,29 @@ using UnityEditor;
  *
  * At the meeting of the 17th we decided on the following
  *
- * liner motion forward
- *      - press to start
- *      - rotate in yaw or pitch by CURRENTLY 45 degrees (mean of others)
- *      - 200ms delay
- *      - translate in direction facing in 1.4m/s to 4- 12m in 2m increments
- *      - stop
- *      - pointer appears, dist from you is chosen uniformly between 4m-12m (record pos of pointer chosen)
- *      - dist is constrained to 0.5m and 32m
- *      - move to the dist you moved
- *      - click when matching distance moved
+ * lliner motion backup
+ *  - start with target in front of you by 5cm
+ *  - press to start
+ *  - moved 8m dist at 1.4m/s 
+ *  - delay 200ms
+ *  - target is extinguished
+ *  - rot 180 degrees at 30 degrees/s (4 directions)
+ *  - 200ms delay
+ *  - pointer appears, dist from you is chosen uniformly between 4m-12m (record pos of pointer chosen)
+ *  - dist is constrained to 0.5m and 32m
+ *  - match target distance to the dist you moved
+ *  - click when happy
  *
  *
  * Version History
- * V1.0 - lifted from the original monolithic version prior to refactoring.
+ *      V1.0 - With lots of code stolen in the refactoring process
  *
  * Michael Jenkin, 2026
  **/
 
-public class LinearForward : MonoBehaviour
+public class LinearBackward : MonoBehaviour
 {
+
     public Material defaultDialogMaterial;
     public Material instructionMaterial;
 
@@ -35,6 +38,11 @@ public class LinearForward : MonoBehaviour
         Initialize, 
         Setup,
         BeforeMotion,
+        WaitForBackwardTarget,
+        WaitToMove,
+        MovingBackward,
+        WaitToRotate,
+        Rotating,
         WaitForAdjustTarget,
         Turn,
         Wait,
@@ -43,10 +51,10 @@ public class LinearForward : MonoBehaviour
         Done
     };
 
-    private const int NLINEAR = 20;                         // number of linear conditions
+    private const int NLINEAR = 4;                         // number of linear conditions
     private const float WAIT_TIME = 0.2f;                   // Wait time in sec
     private const float ROTATE_VEL = 30.0f;                 // rotational velocity in deg/sec
-    private const float ROTATION = 45.0f;                   // how much to turn by
+    private const float ROTATION = 180.0f;                  // how much to turn by
     private const float LINEAR_VEL = 1.4f;                  // linear velocity in m/s
     private const float INIT_TARGET_MIN = 4.0f;             // minimum target initial position
     private const float INIT_TARGET_MAX = 12.0f;            // maximum target initial position
@@ -55,17 +63,19 @@ public class LinearForward : MonoBehaviour
     private const float MIN_MOTION_STEP = 0.01f;            // motion step minimum
     private const float MAX_MOTION_STEP = 0.5f;            // motion step maximum
     private const float MOTION_STEP_MULTIPLIER = 1.1f;      // motion step multiplier
- 
+    private const float TARGET_DISTANCE = 8.0f;             // only one target distance
+    private const float TARGET_START_DIST = 0.05f;          // target starts this far from you
 
     private Dialog _d;                                      // Dialog interface
     private GameObject _dialog;                             // Dialog Gameobject
     private GameObject _camera;
     private GameObject _reticle;
+    private GameObject _target;
     private InputHandler _inputHandler;
     private ExperimentState _experimentState = ExperimentState.Initialize;    // current state of the experiment
     private ResponseLog _responseLog = new ResponseLog();   // the response log
     private HeadTrackerLog _trackerLog;
-    
+
     private int _cond;                                      // current condition number (starts from 0)
     private float _spinDir = 1.0f;                          // spin direction
     private bool _pitch;                                    // is this a pitch or yaw
@@ -73,18 +83,13 @@ public class LinearForward : MonoBehaviour
     private float _distance;                                // how far we want to move
     private float _targetDistance;                          // current target distance 
     private float _targetDistanceInit;                      // initial target distance
-  
 
-    private float _turnStart;                               // time when turn starts
-    private float _waitStart;                               // time when waiting period starts
-    private float _motionStart;                             // time when motion starts
-    
+    float[][] _linear_conditions = new float[NLINEAR][];   // the conditions
+
+    private float _waitStart, _waitStart2, _waitStart3, _backwardTime, _turnStart, _motionStart;
     private float _motionStep = MIN_MOTION_STEP;            // how big a step to make for a keypress (m)
-
-   
-
-     float[][] _linear_conditions = new float[NLINEAR][];   // the conditions
-
+  
+    
 
     public void Start()
     {
@@ -94,26 +99,25 @@ public class LinearForward : MonoBehaviour
         _experimentState = ExperimentState.Initialize;
         _camera = GameObject.Find("Camera Holder");
         _reticle = driver.AdjustableTarget;
+        _target = driver.FixedTarget;
         _inputHandler = _camera.GetComponent<InputHandler>();
         ConstructConditions();
         _trackerLog = GetComponent<HeadTrackerLog> ();
     }
 
-
     private void ConstructConditions()
     {
-        int i = 0;
-        for(int dist=4; dist<=12; dist+=2) {
-            float[] l1 = new float[3] {(float)dist, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
-            float[] l2 = new float[3] {(float)dist, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
-            float[] l3 = new float[3] {(float)dist, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
-            float[] l4 = new float[3] {(float)dist, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
-            _linear_conditions[i++] = l1;
-            _linear_conditions[i++] = l2;
-            _linear_conditions[i++] = l3;
-            _linear_conditions[i++] = l4;
-        }
-        for(i = 0; i < NLINEAR*10; i++)
+
+        float[] l1 = new float[3] {TARGET_DISTANCE, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        float[] l2 = new float[3] {TARGET_DISTANCE, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
+        float[] l3 = new float[3] {TARGET_DISTANCE, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
+        float[] l4 = new float[3] {TARGET_DISTANCE, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
+        _linear_conditions[0] = l1;
+        _linear_conditions[1] = l2;
+        _linear_conditions[2] = l3;
+        _linear_conditions[3] = l4;
+
+        for(int i = 0; i < NLINEAR*10; i++)
         {
             int index1 = UnityEngine.Random.Range(0, NLINEAR);
             int index2 = UnityEngine.Random.Range(0, NLINEAR);
@@ -123,15 +127,15 @@ public class LinearForward : MonoBehaviour
         }
     }
 
-    public void DoAdjustLinearTarget(long startTime, SphereField sf)
+
+    public void DoAdjustLinearTargetBackward(long startTime, SphereField sf)
     {
-        float motion, angle, x, y, z, pan, tilt;
+        float motion, angle, dist, x, y, z, pan, tilt;
 
         Debug.Log("DoAdjustLienarTarget " + _experimentState);
         switch (_experimentState)
         {
             case ExperimentState.Initialize:
-
                 _d.SetBackground(instructionMaterial); 
                 _d.SetDialogElements("Forward Linear Motion", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
@@ -146,9 +150,7 @@ public class LinearForward : MonoBehaviour
                     _cond = 0;
                 }
                 break;
-            case ExperimentState.BeforeMotion: // waiting before motion
-                Debug.Log($"BeforeMotion {_cond}");
-
+            case ExperimentState.BeforeMotion: // waiting before condition
                 if (_cond < NLINEAR)
                 {
                     _distance = _linear_conditions[_cond][0];
@@ -174,21 +176,48 @@ public class LinearForward : MonoBehaviour
                     sf.RePaint(_pitch);
                     sf.EnableHomeBaseDisplay();
 
-                    _experimentState = ExperimentState.WaitForAdjustTarget;
+                    _experimentState = ExperimentState.WaitForBackwardTarget;
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                    _d.SetDialogElements("Forward Linear Motion", new string[] { "Condition " + (1+_cond) + "/" + NLINEAR });
+                    _d.SetDialogElements("Backward Linear Motion", new string[] { "Condition " + (1+_cond) + "/" + NLINEAR });
                     _d.SetDialogInstructions("Press trigger to start");
                     _dialog.SetActive(true);
                     _trackerLog.StartRecording();
                 }
                 break;
-            case ExperimentState.WaitForAdjustTarget:
+            case ExperimentState.WaitForBackwardTarget:
                 if(_inputHandler.TriggerPressed) 
                 {
+                    _target.transform.position = new Vector3(0.0f,0.0f, TARGET_START_DIST);
+                    _target.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                     _dialog.SetActive(false);
-                    _turnStart = Time.time;
+                    _target.SetActive(true);
+                    _waitStart = Time.time;
+                    _experimentState = ExperimentState.WaitToMove;
+                }
+                break;
+            case ExperimentState.WaitToMove:
+                if((Time.time - _waitStart) >= WAIT_TIME) {
+                    _backwardTime = Time.time;
+                    _experimentState = ExperimentState.MovingBackward;
+                }
+                break;
+            case ExperimentState.MovingBackward:
+                dist = LINEAR_VEL * (Time.time - _backwardTime);
+                if(dist >= _distance)
+                {
+                    dist = TARGET_DISTANCE;
+                    _experimentState = ExperimentState.WaitToRotate;
+                    _waitStart2 = Time.time;
+                }
+                _camera.transform.position = new Vector3(0.0f, 0.0f, -dist);
+                break;
+            case ExperimentState.WaitToRotate:
+                if((Time.time - _waitStart2) >= WAIT_TIME)
+                {
+                    _target.SetActive(false);
                     _experimentState = ExperimentState.Turn;
+                    _turnStart = Time.time;
                 }
                 break;
             case ExperimentState.Turn:
@@ -196,9 +225,8 @@ public class LinearForward : MonoBehaviour
                 if (angle >= ROTATION) // rotation is finished
                 {
                     angle = ROTATION;
-                    _waitStart = Time.time;
+                    _waitStart3 = Time.time;
                     _experimentState = ExperimentState.Wait;
-                    Debug.Log("We haev turned " + ROTATION);
                 }
 
                 // execute the turn
@@ -216,63 +244,17 @@ public class LinearForward : MonoBehaviour
                 }
                 break;
             case ExperimentState.Wait:
-                if((Time.time - _waitStart) > WAIT_TIME)
+                if((Time.time - _waitStart3) >= WAIT_TIME)
                 {
-                    _experimentState = ExperimentState.MoveForward;
-                    _motionStart = Time.time;
-                    Debug.Log("we have waited long enough");
-                }
-                break;
-            case ExperimentState.MoveForward: // moving in pointing direction
-
-                // move the camera
-                motion = LINEAR_VEL * (Time.time - _motionStart);
-                Debug.Log("Moving forward " + motion + " " + _distance);
-
-                if(motion >= _distance)
-                    motion = _distance;
-
-                // update camera position
-                if (_pitch)
-                {
-                    x = 0;
-                    y = -motion * Mathf.Sin(3.1415f * _spinDir * ROTATION  / 180.0f);
-                    z = motion * Mathf.Cos(3.1415f * _spinDir * ROTATION  / 180.0f);
-                }
-                else
-                {
-                    x = motion * Mathf.Sin(3.1415f * _spinDir * ROTATION  / 180.0f);
-                    y = 0;
-                    z = motion * Mathf.Cos(3.1415f * _spinDir * ROTATION  / 180.0f);
-                }
-                _camera.transform.position = new Vector3(x, y, z);
-
-                // got to where we want to go
-                if (motion >= _distance) // got to the stimulus distance 
-                {
-                    motion = _distance;
                     _experimentState = ExperimentState.AdjustTarget;
                     _targetDistanceInit = UnityEngine.Random.Range(INIT_TARGET_MIN, INIT_TARGET_MAX);
                     _targetDistance = _targetDistanceInit;
-                    if (_pitch)
-                    {
-                        x = 0;
-                        y = -_targetDistance * Mathf.Sin(3.1415f * _spinDir * ROTATION / 180.0f);
-                        z = _targetDistance * Mathf.Cos(3.1415f * _spinDir * ROTATION / 180.0f);
-                        _reticle.transform.rotation = Quaternion.Euler(_spinDir * ROTATION, 0.0f, 0.0f);
-                        _reticle.transform.position = new Vector3(x + _camera.transform.position.x, y + _camera.transform.position.y, z + _camera.transform.position.z);
-                    } else {
-                        x = _targetDistance * Mathf.Sin(3.1415f * _spinDir * ROTATION / 180.0f);
-                        y = 0;
-                        z = _targetDistance * Mathf.Cos(3.1415f * _spinDir * ROTATION / 180.0f);
-                        _reticle.transform.rotation = Quaternion.Euler(0.0f, _spinDir * ROTATION, 0.0f);
-                        _reticle.transform.position = new Vector3(x + _camera.transform.position.x, y + _camera.transform.position.y, z + _camera.transform.position.z);
-                    }
-
+                    _reticle.transform.rotation = Quaternion.Euler(180.0f, 0.0f, 0.0f); // all answers make this the right rotation!
+                    _reticle.transform.position = new Vector3(0.0f, 0.0f, -_distance - _targetDistanceInit);
                     _reticle.SetActive(true);
                 }
                 break;
-            case ExperimentState.AdjustTarget: // adjust target task (A/B to move, Trigger to select
+                case ExperimentState.AdjustTarget: // adjust target task (A/B to move, Trigger to select
                 if(_inputHandler.Astate) 
                 {
                     if(_inputHandler.AstateOld)
@@ -305,29 +287,18 @@ public class LinearForward : MonoBehaviour
                     _inputHandler.BstateOld = false;
                 }
 
-                if (_pitch)
-                {
-                    x = 0;
-                    y = -_targetDistance * Mathf.Sin(3.1415f * _spinDir * ROTATION / 180.0f);
-                    z = _targetDistance * Mathf.Cos(3.1415f * _spinDir * ROTATION / 180.0f);
-                    _reticle.transform.rotation = Quaternion.Euler(_spinDir * ROTATION, 0.0f, 0.0f);
-                    _reticle.transform.position = new Vector3(x + _camera.transform.position.x, y + _camera.transform.position.y, z + _camera.transform.position.z);
-                } else {
-                    x = _targetDistance * Mathf.Sin(3.1415f * _spinDir * ROTATION / 180.0f);
-                    y = 0;
-                    z = _targetDistance * Mathf.Cos(3.1415f * _spinDir * ROTATION / 180.0f);
-                    _reticle.transform.rotation = Quaternion.Euler(0.0f, _spinDir * ROTATION, 0.0f);
-                    _reticle.transform.position = new Vector3(x + _camera.transform.position.x, y + _camera.transform.position.y, z + _camera.transform.position.z);
-                }
+   
+                _reticle.transform.position = new Vector3(0.0f, 0.0f, -_distance - _targetDistance);
 
                 if(_inputHandler.TriggerPressed) 
                 {
-                    _responseLog.AddForward(_cond, _turnStart, _distance, ROTATION, _pitch, _spinDir, _targetDistanceInit, _targetDistance); 
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_formward_" + startTime + "_" + _cond + ".txt");
+                    _responseLog.AddBackward(_cond, _waitStart, _distance, _pitch, _spinDir, _targetDistanceInit, _targetDistance); 
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_backward_" + startTime + "_" + _cond + ".txt");
                     _reticle.SetActive(false);
 
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                    _reticle.SetActive(false);
 
                     if(_cond < NLINEAR - 1)
                     {
@@ -355,5 +326,6 @@ public class LinearForward : MonoBehaviour
                 }
                 break;
         }
+            
     }
 }

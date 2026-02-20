@@ -95,13 +95,12 @@ public class HomeBaseDriver : MonoBehaviour
         switch(exp)
         {
             case Enums.Experiment.ControlForward:
-                Debug.Log("*** do Control Forward");
                 _whichExperiment = Enums.Experiment.ControlForward;
                 _doingMenu = false;
-
                 break;
             case Enums.Experiment.ControlBackward:
-                Debug.Log("*** do Control Forward");
+                _whichExperiment = Enums.Experiment.ControlBackward;
+                _doingMenu = false;
                 break;
             case Enums.Experiment.ControlRotation:
                 break;
@@ -113,9 +112,6 @@ public class HomeBaseDriver : MonoBehaviour
                 QuitPlaying();
                 break;
         }
-
-        
-        Debug.Log("Menu state is " + exp);
     }
 
     // Update is called once per frame
@@ -133,6 +129,10 @@ public class HomeBaseDriver : MonoBehaviour
                 case Enums.Experiment.ControlForward:
                     LinearForward linearForward = GetComponent<LinearForward>();
                     linearForward.DoAdjustLinearTarget(_startTime, _sf);
+                    break;
+                case Enums.Experiment.ControlBackward:
+                    LinearBackward linearBackward = GetComponent<LinearBackward>();
+                    linearBackward.DoAdjustLinearTargetBackward(_startTime, _sf);
                     break;
                 default:
                     Debug.Log("EH?");
