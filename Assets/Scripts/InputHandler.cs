@@ -25,9 +25,9 @@ public class InputHandler : MonoBehaviour
 
     public bool TriggerPressed = false;
     public bool KeyUp = false;
-    private bool KeyUpOld = false;
+   
     public bool KeyDown = false;
-    private bool KeyDownOld = false;
+   
 
     public bool Astate = false;
     public bool AstateOld = false;

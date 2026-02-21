@@ -32,6 +32,13 @@ public class ResponseLog
         _log.Add(s);
     }
     
+    public void AddRotation(int cond, float turnStart, float rotation, bool pitch, float spinDir, float response)
+    {
+        string s;
+
+        s = $"{cond}, {turnStart}, {rotation}, {pitch}, {spinDir}, {response}";
+        Add(s);
+    }
 
     public void AddBackward(int cond, float waitStart, float distance, bool pitch, float spinDir, 
                     float targetDistanceInit, float targetDistance)

@@ -54,11 +54,12 @@ public class HeadTrackerLog : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        string s = $"{Time.time}, {_camera_holder.transform.position.x}, {_camera_holder.transform.position.y}, {_camera_holder.transform.position.z}, " +
+        if(_logging) {
+            string s = $"{Time.time}, {_camera_holder.transform.position.x}, {_camera_holder.transform.position.y}, {_camera_holder.transform.position.z}, " +
                                   $"{_camera_holder.transform.rotation.x}, {_camera_holder.transform.rotation.y}, {_camera_holder.transform.rotation.z}, {_camera_holder.transform.rotation.w}, " +
                                   $"{_camera.transform.position.x}, {_camera.transform.position.y}, {_camera.transform.position.z}, " +
                                   $"{_camera.transform.rotation.x}, {_camera.transform.rotation.y}, {_camera.transform.rotation.z}, {_camera.transform.rotation.w}";
-        _log.Add(s);
+            _log.Add(s);
+        }
     }
-
 }

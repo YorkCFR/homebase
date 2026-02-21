@@ -42,11 +42,8 @@ public class LinearBackward : MonoBehaviour
         WaitToMove,
         MovingBackward,
         WaitToRotate,
-        Rotating,
-        WaitForAdjustTarget,
         Turn,
-        Wait,
-        MoveForward,        
+        Wait,    
         AdjustTarget,
         Done
     };
@@ -130,14 +127,14 @@ public class LinearBackward : MonoBehaviour
 
     public void DoAdjustLinearTargetBackward(long startTime, SphereField sf)
     {
-        float motion, angle, dist, x, y, z, pan, tilt;
+        float angle, dist, pan, tilt;
 
         Debug.Log("DoAdjustLienarTarget " + _experimentState);
         switch (_experimentState)
         {
             case ExperimentState.Initialize:
                 _d.SetBackground(instructionMaterial); 
-                _d.SetDialogElements("Forward Linear Motion", new string[] { "" });
+                _d.SetDialogElements("Backward Linear Motion", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
                 _experimentState = ExperimentState.Setup;
                 _dialog.SetActive(true);
@@ -305,7 +302,7 @@ public class LinearBackward : MonoBehaviour
                         _cond = _cond + 1;
                         _experimentState = ExperimentState.BeforeMotion;
                     } else {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_forward_" + startTime + ".txt", "cond, starttime, motion, rotation, pitch, spindir, inittarget, finaltarget");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_backward_" + startTime + ".txt", "cond, starttime, motion, rotation, pitch, spindir, inittarget, finaltarget");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to quit");

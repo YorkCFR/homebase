@@ -56,23 +56,18 @@ public class Dialog : MonoBehaviour
         this.choice.GetComponent<TextMesh>().text = choices[0];
         this.currentChoice = 0;
         this.hasResponse = false;
-        Debug.Log("set title to " + title);
     }
 
     public void SetBackground(Material m)
     {
         int childCount = transform.childCount;
-        Debug.Log("There are n children n=" + childCount );
         for(int i=0;i<childCount;i++)
         {
             GameObject child = transform.GetChild(i).gameObject;
-            Debug.Log("Child is " + child.name);
             if("Background" == child.name)
             {
-                Debug.Log("Material setting");
                 Renderer r = child.GetComponent<Renderer>();
                 r.material = m;
-                Debug.Log("Material set");
                 return;
             }
         }
@@ -117,8 +112,6 @@ public class Dialog : MonoBehaviour
         if(inputHandler.TriggerPressed)
         //if(Input.GetKeyDown("x")|| Input.GetKeyDown(KeyCode.JoystickButton0))
         {
-            Debug.Log("Got an input event");
-            Debug.Log("Choice is " + this.currentChoice);
             this.hasResponse = true;
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine;
  * Do the top levels of the menu item
  *
  * Version Histroy
+ * V1.1 - minor bug tweaks and better 'back' performance
  * V1.0 - refactoring of the initial system.
  *
  * Note that many classes are attached to the same parent object, simplifying some of
@@ -14,9 +15,6 @@ using UnityEngine;
 
 public class TopLevelMenu : MonoBehaviour
 {
-    private GameObject _camera = null;
-    private GameObject _dialog = null;
-
      private enum UIState
     {
         Initialize,
@@ -36,16 +34,10 @@ public class TopLevelMenu : MonoBehaviour
  
     public Enums.Experiment DealWithMenu()
     {
-
-        Debug.Log("Dealing with menu");
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
         GameObject _dialog = driver.Dialog;
         Dialog d = _dialog.GetComponent<Dialog>();
  
-        Debug.Log("Got dialog");
-
-
-        Debug.Log($"In update uistate is {_uiState}");
         switch (_uiState)
         {
             case UIState.Initialize:  // bring up the choose experiment screen
@@ -72,7 +64,7 @@ public class TopLevelMenu : MonoBehaviour
                     case -1:
                         return(Enums.Experiment.Waiting);
                 }
-                Debug.Log("Not Reached (TopLevelMenu)");
+                Debug.Log("Not Reached (TopLevelMenu) control or triangle " + resp);
                 return(Enums.Experiment.Waiting);
             case UIState.SelectControl:
                 int resp2 = d.GetResponse();
@@ -90,13 +82,13 @@ public class TopLevelMenu : MonoBehaviour
                         return(Enums.Experiment.Waiting);
                     case 2:
                         d.SetDialogElements("Confirm Choice", new string[] {"Do Rotation Control Experiment", "Back"});
-                        _confirmExperiment = Enums.Experiment.ControlBackward;
+                        _confirmExperiment = Enums.Experiment.ControlRotation;
                         _uiState = UIState.ConfirmScreen;
                         return(Enums.Experiment.Waiting);
                     case -1:
                         return(Enums.Experiment.Waiting);
                 }
-                Debug.Log("Not Reached (TopLevelMenu)");
+                Debug.Log("Not Reached (TopLevelMenu) selectcontrol " + resp2);
                 return(Enums.Experiment.Waiting);
             case UIState.ConfirmScreen:
                 int confirm = d.GetResponse();
@@ -107,16 +99,25 @@ public class TopLevelMenu : MonoBehaviour
                         _dialog.SetActive(false);
                         return(_confirmExperiment);
                     case 1:
-                        d.SetDialogElements("Choose Experiment", new string[] { "Control Experiments", "Triangle Completion Experiment", "Quit Homebase"});
-                        _uiState = UIState.ControlOrTriangle;
+                        if(_confirmExperiment == Enums.Experiment.TriangleCompletion) {
+                            d.SetDialogElements("Choose Experiment", new string[] { "Control Experiments", "Triangle Completion Experiment", "Quit Homebase"});
+                            _uiState = UIState.ControlOrTriangle;
+                        } 
+                        else
+                        {
+                            d.SetDialogElements("Choose Control", new string[] { "Linear Forward Control", "Linear Backward Control", "Rotation Control" });
+                            _uiState = UIState.SelectControl;
+                        }
                         return(Enums.Experiment.Waiting);
                     case -1:
                         return(Enums.Experiment.Waiting);
                 }
-                Debug.Log("Not reached (TopLevel Menu)");
+                Debug.Log("Not reached (TopLevel Menu) confirmscreen");
+                return(Enums.Experiment.Waiting);
+            case UIState.Done:
                 return(Enums.Experiment.Waiting);
         }
-        Debug.Log("Not reached (TopLevel Menu)");
+        Debug.Log("Not reached (TopLevel Menu) uistate " + _uiState);
         return(Enums.Experiment.None);
     }
 }

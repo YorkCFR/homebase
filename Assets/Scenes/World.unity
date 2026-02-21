@@ -246,6 +246,7 @@ GameObject:
   - component: {fileID: 234017189}
   - component: {fileID: 234017190}
   - component: {fileID: 234017191}
+  - component: {fileID: 234017192}
   m_Layer: 0
   m_Name: Camera Holder
   m_TagString: Untagged
@@ -405,6 +406,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LinearBackward
   defaultDialogMaterial: {fileID: 2100000, guid: 9e98779de89484e089284a68e2012dba, type: 2}
   instructionMaterial: {fileID: 2100000, guid: 364a1099c5c724916a2447e724e9580c, type: 2}
+--- !u!114 &234017192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234017183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8a5613c463141549849821cf755f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotationControl
+  defaultDialogMaterial: {fileID: 2100000, guid: 9e98779de89484e089284a68e2012dba, type: 2}
+  instructionMaterial: {fileID: 2100000, guid: db9c7c362d93a42c690a589ccbc0e2b4, type: 2}
 --- !u!1 &348180573
 GameObject:
   m_ObjectHideFlags: 0

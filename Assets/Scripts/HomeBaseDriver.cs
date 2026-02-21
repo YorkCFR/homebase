@@ -32,7 +32,7 @@ public class HomeBaseDriver : MonoBehaviour
     public GameObject HomeBase;
     public GameObject Dialog;
 
-    private const int NSPHERES = 1200;                     // number of spheres (12,000)
+    private const int NSPHERES = 2400;                     // number of spheres (12,000)
 
     TopLevelMenu topLevelMenu;
     private bool _doingMenu = true;
@@ -66,13 +66,11 @@ public class HomeBaseDriver : MonoBehaviour
     {
         _startTime = (long)(DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds;
         GetGameObjects();
-        Debug.Log("Getting toplevelmenu");
         topLevelMenu = GetComponent<TopLevelMenu>();
 
-        Debug.Log("Making spheres");
+
         _sf = new SphereField(NSPHERES); // we regenerate locations as needed
         _sf.EnableHomeBaseDisplay();
-        Debug.Log("Spheres made");
         _doingMenu = true;
         //_whichExperiment = TopLevelMenu.Experiment.None;
     }
@@ -103,8 +101,12 @@ public class HomeBaseDriver : MonoBehaviour
                 _doingMenu = false;
                 break;
             case Enums.Experiment.ControlRotation:
+                _whichExperiment = Enums.Experiment.ControlRotation;
+                _doingMenu = false;
                 break;
             case Enums.Experiment.TriangleCompletion:
+                _whichExperiment = Enums.Experiment.TriangleCompletion;
+                _doingMenu = false;
                 break;
             case Enums.Experiment.Waiting:
                 break;
@@ -133,6 +135,13 @@ public class HomeBaseDriver : MonoBehaviour
                 case Enums.Experiment.ControlBackward:
                     LinearBackward linearBackward = GetComponent<LinearBackward>();
                     linearBackward.DoAdjustLinearTargetBackward(_startTime, _sf);
+                    break;
+                case Enums.Experiment.ControlRotation:
+                    RotationControl rotationControl = GetComponent<RotationControl>();
+                    rotationControl.DoRotationControl(_startTime, _sf);
+                    break;
+                case Enums.Experiment.TriangleCompletion:
+                    Debug.Log("Not yet written");
                     break;
                 default:
                     Debug.Log("EH?");
