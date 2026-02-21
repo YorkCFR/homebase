@@ -31,6 +31,13 @@ public class ResponseLog
     {
         _log.Add(s);
     }
+
+    public void AddTriangle(int cond, float backStart, float l1, float turn, bool pitch, float spinDir, float l2, float targetDistanceInit, float targetDistance, float angle)
+    {
+        string s;
+        s = $"{cond}, {backStart}, {l1}, {turn}, {pitch}, {spinDir}, {l2}, {targetDistanceInit}, {targetDistance}, {angle}";
+        Add(s);
+    }
     
     public void AddRotation(int cond, float turnStart, float rotation, bool pitch, float spinDir, float response)
     {

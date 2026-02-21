@@ -19,6 +19,7 @@ using UnityEditor;
  * For 3 x 2 x 2 = 12 conditions
  *
  * Version control
+ *.    V2.1 match the motion (rather than return to 0)
  *     V2.0 borrowed from the initial prototype version and modified as per the notes of the 17th
  *     V1.0 initial version from the monolith program
  *

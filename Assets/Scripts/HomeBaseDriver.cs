@@ -141,7 +141,8 @@ public class HomeBaseDriver : MonoBehaviour
                     rotationControl.DoRotationControl(_startTime, _sf);
                     break;
                 case Enums.Experiment.TriangleCompletion:
-                    Debug.Log("Not yet written");
+                    TriangleCompletion triangleCompletion = GetComponent<TriangleCompletion>();
+                    triangleCompletion.DoTriangleCompletion(_startTime, _sf);
                     break;
                 default:
                     Debug.Log("EH?");

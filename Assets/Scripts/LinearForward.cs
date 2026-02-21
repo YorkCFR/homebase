@@ -85,6 +85,9 @@ public class LinearForward : MonoBehaviour
 
      float[][] _linear_conditions = new float[NLINEAR][];   // the conditions
 
+    private bool _AstateOld = false;
+    private bool _BstateOld = false;
+
 
     public void Start()
     {
@@ -275,34 +278,34 @@ public class LinearForward : MonoBehaviour
             case ExperimentState.AdjustTarget: // adjust target task (A/B to move, Trigger to select
                 if(_inputHandler.Astate) 
                 {
-                    if(_inputHandler.AstateOld)
+                    if(_AstateOld)
                     {
                         _motionStep = Mathf.Min(MOTION_STEP_MULTIPLIER * _motionStep, MAX_MOTION_STEP);
                     } else
                     {
                         _motionStep = MIN_MOTION_STEP;
                     }
-                    _inputHandler.AstateOld = true;
-                    _inputHandler.BstateOld = false;
+                    _AstateOld = true;
+                    _BstateOld = false;
                     _targetDistance = Mathf.Min(_targetDistance + _motionStep, TARGET_MAX);
                 }
                 else if(_inputHandler.Bstate) 
                 {
-                    if(_inputHandler.BstateOld)
+                    if(_BstateOld)
                     {
                         _motionStep = Mathf.Min(MOTION_STEP_MULTIPLIER * _motionStep, MAX_MOTION_STEP);
                     } else
                     {
                         _motionStep = MIN_MOTION_STEP;
                     }
-                    _inputHandler.AstateOld = false;
-                    _inputHandler.BstateOld = true;
+                    _AstateOld = false;
+                    _BstateOld = true;
                     _targetDistance = Mathf.Max(_targetDistance - _motionStep, TARGET_MIN);
                 } 
                 else
                 {
-                    _inputHandler.AstateOld = false;
-                    _inputHandler.BstateOld = false;
+                    _AstateOld = false;
+                    _BstateOld = false;
                 }
 
                 if (_pitch)

@@ -30,9 +30,8 @@ public class InputHandler : MonoBehaviour
    
 
     public bool Astate = false;
-    public bool AstateOld = false;
     public bool Bstate = false;
-    public bool BstateOld = false;
+
 
     private Vector2 ThumbstickValue = new Vector2(0.0f, 0.0f); 
     private bool UpDownReset = false;
