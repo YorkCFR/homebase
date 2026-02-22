@@ -32,7 +32,7 @@ public class HomeBaseDriver : MonoBehaviour
     public GameObject HomeBase;
     public GameObject Dialog;
 
-    private const int NSPHERES = 2400;                     // number of spheres (12,000)
+    private const int NSPHERES = 3600;                     // number of spheres (12,000)
 
     TopLevelMenu topLevelMenu;
     private bool _doingMenu = true;

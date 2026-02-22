@@ -266,7 +266,7 @@ public class LinearBackward : MonoBehaviour
                     }
                     _AstateOld = true;
                     _BstateOld = false;
-                    _targetDistance = Mathf.Min(_targetDistance + _motionStep, TARGET_MAX);
+                    _targetDistance = Mathf.Min(_targetDistance - _motionStep, TARGET_MAX);
                 }
                 else if(_inputHandler.Bstate) 
                 {
@@ -279,7 +279,7 @@ public class LinearBackward : MonoBehaviour
                     }
                     _AstateOld = false;
                     _BstateOld = true;
-                    _targetDistance = Mathf.Max(_targetDistance - _motionStep, TARGET_MIN);
+                    _targetDistance = Mathf.Max(_targetDistance + _motionStep, TARGET_MIN);
                 } 
                 else
                 {

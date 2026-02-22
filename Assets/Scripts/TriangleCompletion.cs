@@ -398,7 +398,7 @@ public class TriangleCompletion : MonoBehaviour
                     }
                     _AstateOld = true;
                     _BstateOld = false;
-                    _directionDistance = Mathf.Max(_directionDistance + _motionStep, MIN_RETICLE_DISTANCE);
+                    _directionDistance = Mathf.Max(_directionDistance - _motionStep, MIN_RETICLE_DISTANCE);
 
                 } 
                 else if(_inputHandler.Bstate) {
@@ -412,7 +412,7 @@ public class TriangleCompletion : MonoBehaviour
                     }
                     _AstateOld = false;
                     _BstateOld = true;
-                    _directionDistance = Mathf.Min(_directionDistance - _motionStep, MAX_RETICLE_DISTANCE);
+                    _directionDistance = Mathf.Min(_directionDistance + _motionStep, MAX_RETICLE_DISTANCE);
                 } else {
                     _AstateOld = false;
                     _BstateOld = false;
@@ -461,6 +461,7 @@ public class TriangleCompletion : MonoBehaviour
                         _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to quit");
+                        _dialog.SetActive(true);
                         _experimentState = ExperimentState.Done;
                     }
                 }
