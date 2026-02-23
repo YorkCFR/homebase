@@ -20,7 +20,7 @@ public class Dialog : MonoBehaviour
     public GameObject choice;
     public GameObject instructions;
 
-    private InputHandler inputHandler;
+    private InputHandler _inputHandler;
    
 
     private string[] choices;
@@ -77,7 +77,7 @@ public class Dialog : MonoBehaviour
     void Start()
     {
         GameObject cameraHolder = GameObject.Find("Camera Holder");
-        inputHandler = cameraHolder.GetComponent<InputHandler>();
+        _inputHandler = cameraHolder.GetComponent<InputHandler>();
 
         this.hasResponse = false;
     }
@@ -95,21 +95,21 @@ public class Dialog : MonoBehaviour
         if (this.hasResponse)
             return;
         
-        if(inputHandler.KeyUp)
+        if(_inputHandler.KeyDown)
        // if (Input.GetKeyDown("up")|| Input.GetKeyDown(KeyCode.JoystickButton5))
         {
             this.currentChoice = (this.currentChoice + this.choices.Length - 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
-            inputHandler.InputReset();
+            _inputHandler.InputReset();
         }
-        if(inputHandler.KeyDown)
+        if(_inputHandler.KeyUp)
         //if(Input.GetKeyDown("down")|| Input.GetKeyDown(KeyCode.JoystickButton4))
         {
             this.currentChoice = (this.currentChoice + 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
-            inputHandler.InputReset();
+            _inputHandler.InputReset();
         }
-        if(inputHandler.TriggerPressed)
+        if(_inputHandler.TriggerPressed)
         //if(Input.GetKeyDown("x")|| Input.GetKeyDown(KeyCode.JoystickButton0))
         {
             this.hasResponse = true;

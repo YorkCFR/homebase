@@ -1,0 +1,95 @@
+{
+    "version": 1,
+    "name": "XRControllerActions",
+    "maps": [
+        {
+            "name": "Experiment Actions",
+            "id": "afea350d-26bf-4d6b-abcb-28afa6e273ec",
+            "actions": [
+                {
+                    "name": "A Button",
+                    "type": "Button",
+                    "id": "83f12e12-2fe7-4e17-8a89-1bbbf698661c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "B Button",
+                    "type": "Button",
+                    "id": "5d39381a-41bc-4ad5-b715-13ec6d088b99",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Trigger Action",
+                    "type": "Button",
+                    "id": "3214ad5e-f0ba-4404-a3aa-2b0c89aeeaf6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Thumbstick Action",
+                    "type": "Value",
+                    "id": "b75bba78-7aba-4486-bd19-71a5e6fd4da8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1b335470-9162-4bf0-a9cb-45718b21ca50",
+                    "path": "<XRController>{RightHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "A Button",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d80d9e5-a47e-475b-aa82-f742b85f7d9b",
+                    "path": "<XRController>{RightHand}/{SecondaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "B Button",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "34c1f33e-a29f-4bdb-b27c-5ce2cce59abd",
+                    "path": "<XRController>{RightHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Trigger Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47a79259-ce66-4a8c-8c43-829bccb9e994",
+                    "path": "<XRController>{RightHand}/{Primary2DAxis}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Thumbstick Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
