@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
  * Copyright Michael Jenkin 2025, 2026
  * Version History
  * 
+ * V2.6 - updates after the 9th of March
  * V2.5 - Updates after the 17th of Feb
  * V2.1 - ensure output even if no user input (?)
  * V2.0 - updated triangle completion task
@@ -135,7 +136,8 @@ public class HomeBaseDriver : MonoBehaviour
                     break;
                 case Enums.Experiment.ControlBackward:
                     LinearBackward linearBackward = GetComponent<LinearBackward>();
-                    linearBackward.DoAdjustLinearTargetBackward(_startTime, _sf);
+                    if(linearBackward.DoAdjustLinearTargetBackward(_startTime, _sf))
+                        QuitPlaying();
                     break;
                 case Enums.Experiment.ControlRotation:
                     RotationControl rotationControl = GetComponent<RotationControl>();
