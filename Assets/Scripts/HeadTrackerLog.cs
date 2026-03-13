@@ -37,6 +37,7 @@ public class HeadTrackerLog : MonoBehaviour
         {
             using (StreamWriter sw = new StreamWriter(fileName))
             {
+                sw.WriteLine("Time, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, head pos x, head pos y, head pos z, head rot x, head rot y, head rot z, head rot w");
                 foreach (string p in _log)
                 {
                     sw.WriteLine(p);

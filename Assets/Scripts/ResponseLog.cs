@@ -7,9 +7,10 @@ using UnityEngine;
 /**
  * Record and then dump out a set of responses
  *
- * Version
- * V2.0 Now its just a list of strings. This simplifies using it elsewhere
- * V1.0 borrowed from the TrialLog code from the SMUG project.
+ * Version History
+ * V3.0 - version based on March 9th revisions
+ * V2.0 - version based on Feb 17th revisions
+ * V1.0 - lifted from the original monolithic version prior to refactoring.
  *
  * Copyright (c) Michael Jenkin, 2025, 2026
  **/

@@ -31,7 +31,8 @@ using UnityEditor;
  *
  *
  * Version History
- *      V1.1 - updates based on the March 9th meeting
+ *      V3.0 - updates based on the March 9th meeting
+ *      V2.0 - updates based on Februady 17th meeting   
  *      V1.0 - With lots of code stolen in the refactoring process
  *
  * Michael Jenkin, 2026
@@ -124,10 +125,10 @@ public class LinearBackward : MonoBehaviour
         float[] l2 = new float[3] {TARGET_DISTANCE, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
         float[] l3 = new float[3] {TARGET_DISTANCE, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
         float[] l4 = new float[3] {TARGET_DISTANCE, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
-        float[] p1 = new float[3] {TARGET_DISTANCE, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
-        float[] p2 = new float[3] {TARGET_DISTANCE, -1.0f, 1.0f};  // dist, pan/tilt, direction sign
+        float[] p1 = new float[3] {TARGET_DISTANCE, -1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        float[] p2 = new float[3] {TARGET_DISTANCE, 1.0f, 1.0f};  // dist, pan/tilt, direction sign
 
-        for(int i=0;i<6;i++) 
+        for(int i=0;i<(NLINEAR+NPRACTICE);i++) 
             _linear_conditions[i] = new float[3];
 
         for(int i=0; i<3; i++)
@@ -173,12 +174,12 @@ public class LinearBackward : MonoBehaviour
     {
         float angle, dist, pan, tilt;
 
-        Debug.Log("DoAdjustLienarTarget " + _experimentState + " " + _cond);
+        Debug.Log("DoAdjustLienarTarget " + _experimentState + "condition " + _cond);
         switch (_experimentState)
         {
             case ExperimentState.Initialize:
                 _d.SetBackground(instructionMaterial); 
-                _d.SetDialogElements("Backward Linear Motion", new string[] { "" });
+                _d.SetDialogElements("", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
                 _experimentState = ExperimentState.Setup;
                 _dialog.SetActive(true);
@@ -349,7 +350,7 @@ public class LinearBackward : MonoBehaviour
                         Debug.Log($"going back for next condition {_cond}");
                     } else {
                         _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_backward_" + startTime + ".txt",
-                            "cond, starttime, targetd,  pitch, spinDir, inittarget, finaltarget, posx, posy, posz, rotx, roty, rotz, rotw");
+                            "cond, starttime, targetd,  pitch, spinDir, inittarget, finaltarget, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to continue");
@@ -359,8 +360,10 @@ public class LinearBackward : MonoBehaviour
                 }
                 break;
             case ExperimentState.Done:
-                if (_inputHandler.TriggerPressed)
+                if (_inputHandler.TriggerPressed) {
+                    _dialog.SetActive(false);
                     return(true);
+                }
                 break;
         }
         return(false);

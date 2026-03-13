@@ -5,6 +5,15 @@ using UnityEditor;
  * Do the formward linear motion task. Much of this code was lifted from the 
  * first version.
  *
+ *  At the meeting of 9th of March (ony things that impact this component)
+ *  - components are run in sequence
+ *  - insert two practice trials
+ *  - more complete headers in the output file
+ *  - updated reticle
+ *  - updated instruction cards
+ *  - updated conditions
+ *
+ *
  * At the meeting of the 17th we decided on the following
  *
  * liner motion forward
@@ -20,6 +29,8 @@ using UnityEditor;
  *
  *
  * Version History
+ * V3.0 - version based on March 9th revisions
+ * V2.0 - version based on Feb 17th revisions
  * V1.0 - lifted from the original monolithic version prior to refactoring.
  *
  * Michael Jenkin, 2026
@@ -43,7 +54,8 @@ public class LinearForward : MonoBehaviour
         Done
     };
 
-    private const int NLINEAR = 20;                         // number of linear conditions
+    private const int NLINEAR = 16;                         // number of linear conditions
+    private const int NPRACTICE = 2;                        // Number of practice conditions
     private const float WAIT_TIME = 0.2f;                   // Wait time in sec
     private const float ROTATE_VEL = 30.0f;                 // rotational velocity in deg/sec
     private const float ROTATION = 45.0f;                   // how much to turn by
@@ -83,7 +95,7 @@ public class LinearForward : MonoBehaviour
 
    
 
-     float[][] _linear_conditions = new float[NLINEAR][];   // the conditions
+     float[][] _linear_conditions = new float[NLINEAR+NPRACTICE][];   // the conditions
 
     private bool _AstateOld = false;
     private bool _BstateOld = false;
@@ -101,24 +113,35 @@ public class LinearForward : MonoBehaviour
         _inputHandler = _camera.GetComponent<InputHandler>();
         ConstructConditions();
         _trackerLog = GetComponent<HeadTrackerLog> ();
+
+        Debug.Log($"tracker {_trackerLog==null}");
+
     }
 
 
     private void ConstructConditions()
     {
-        int i = 0;
-        for(int dist=4; dist<=12; dist+=2) {
-            float[] l1 = new float[3] {(float)dist, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
-            float[] l2 = new float[3] {(float)dist, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
-            float[] l3 = new float[3] {(float)dist, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
-            float[] l4 = new float[3] {(float)dist, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
-            _linear_conditions[i++] = l1;
-            _linear_conditions[i++] = l2;
-            _linear_conditions[i++] = l3;
-            _linear_conditions[i++] = l4;
-        }
+        _linear_conditions[0] = new float[3] {3.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        _linear_conditions[1] = new float[3] {3.0f, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
+        _linear_conditions[2] = new float[3] {3.0f, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
+        _linear_conditions[3] = new float[3] {3.0f, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
+        _linear_conditions[4] = new float[3] {5.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        _linear_conditions[5] = new float[3] {5.0f, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
+        _linear_conditions[6] = new float[3] {5.0f, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
+        _linear_conditions[7] = new float[3] {5.0f, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
+        _linear_conditions[8] = new float[3] {7.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        _linear_conditions[9] = new float[3] {7.0f, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
+        _linear_conditions[10] = new float[3] {7.0f, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
+        _linear_conditions[11] = new float[3] {7.0f, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
+        _linear_conditions[12] = new float[3] {9.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        _linear_conditions[13] = new float[3] {9.0f, 1.0f, -1.0f};  // dist, pan/tilt, direction sign
+        _linear_conditions[14] = new float[3] {9.0f, -1.0f, 1.0f};  // dist, pan/tilt, direction sign 
+        _linear_conditions[15] = new float[3] {9.0f, -1.0f, -1.0f}; // dist, pan/tilt, direciont sign
+        _linear_conditions[16] = new float[3];
+        _linear_conditions[17] = new float[3];
+
         float[] z = new float[3];
-        for(i = 0; i < NLINEAR*10; i++)
+        for(int i = 0; i < NLINEAR*10; i++)
         {
             int index1 = UnityEngine.Random.Range(0, NLINEAR);
             int index2 = UnityEngine.Random.Range(0, NLINEAR);
@@ -129,19 +152,41 @@ public class LinearForward : MonoBehaviour
             for(int j=0;j<3;j++)
                 _linear_conditions[index2][j] = z[j];
         }
+
+        float[] p1 = new float[3] {6.0f, -1.0f, -1.0f};   // dist, pan/tilt, direction sign
+        float[] p2 = new float[3] {8.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+
+        // slide the real conditions back and insert the practice conditions
+        for(int i=(NLINEAR-1); i >= 0; i--)
+        {
+            for(int j=0;j<3;j++)
+                _linear_conditions[i+NPRACTICE][j] = _linear_conditions[i][j];
+        }
+
+        for(int i=0; i<3; i++)
+        {
+            _linear_conditions[0][i] = p1[i];
+            _linear_conditions[1][i] = p2[i];
+        }
+
+        for(int i = 0; i < NLINEAR + NPRACTICE; i++)
+        {
+            for(int j=0;j<3;j++)
+                Debug.Log(_linear_conditions[i][j]);
+        }
     }
 
-    public void DoAdjustLinearTarget(long startTime, SphereField sf)
+    public bool DoAdjustLinearTarget(long startTime, SphereField sf)
     {
         float motion, angle, x, y, z, pan, tilt;
 
-        Debug.Log("DoAdjustLienarTarget " + _experimentState);
+        Debug.Log("DoAdjustLienarTarget " + _experimentState + " condition " + _cond);
         switch (_experimentState)
         {
             case ExperimentState.Initialize:
 
                 _d.SetBackground(instructionMaterial); 
-                _d.SetDialogElements("Forward Linear Motion", new string[] { "" });
+                _d.SetDialogElements("", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
                 _experimentState = ExperimentState.Setup;
                 _dialog.SetActive(true);
@@ -157,7 +202,7 @@ public class LinearForward : MonoBehaviour
             case ExperimentState.BeforeMotion: // waiting before motion
                 Debug.Log($"BeforeMotion {_cond}");
 
-                if (_cond < NLINEAR)
+                if (_cond < (NLINEAR+NPRACTICE))
                 {
                     _distance = _linear_conditions[_cond][0];
                     _pitch = _linear_conditions[_cond][1] > 0;
@@ -185,7 +230,7 @@ public class LinearForward : MonoBehaviour
                     _experimentState = ExperimentState.WaitForAdjustTarget;
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                    _d.SetDialogElements("Forward Linear Motion", new string[] { "Condition " + (1+_cond) + "/" + NLINEAR });
+                    _d.SetDialogElements("Forward Linear Motion", new string[] { "Condition " + (1+_cond) + "/" + (NLINEAR+NPRACTICE) });
                     _d.SetDialogInstructions("Press trigger to start");
                     _dialog.SetActive(true);
                     _trackerLog.StartRecording();
@@ -330,19 +375,28 @@ public class LinearForward : MonoBehaviour
 
                 if(_inputHandler.TriggerPressed) 
                 {
+                    Debug.Log("Trigger pressed");
                     _responseLog.AddForward(_cond, _turnStart, _distance, ROTATION, _pitch, _spinDir, _targetDistanceInit, _targetDistance); 
+                    Debug.Log("response logged");
+                    Debug.Log(Application.persistentDataPath);
+                    Debug.Log($"tracker {_trackerLog==null}");
                     _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_formward_" + startTime + "_" + _cond + ".txt");
+                    Debug.Log("tracker logged");
                     _reticle.SetActive(false);
+                    Debug.Log("reticle off");
 
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
-                    if(_cond < NLINEAR - 1)
+                    if(_cond < (NLINEAR + NPRACTICE - 1))
                     {
                         _cond = _cond + 1;
                         _experimentState = ExperimentState.BeforeMotion;
+                        Debug.Log($"going back for next condition {_cond}");
                     } else {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_forward_" + startTime + ".txt", "cond, starttime, motion, rotation, pitch, spindir, inittarget, finaltarget");
+                        Debug.Log("saving data");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_forward_" + startTime + ".txt",
+                        "cond, starttime, targetd,  rotation, pitch, spinDir, inittarget, finaltarget, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to quit");
@@ -353,15 +407,13 @@ public class LinearForward : MonoBehaviour
                 }
                 break;
             case ExperimentState.Done:
-                if (_inputHandler.TriggerPressed)
-                {
-#if UNITY_EDITOR
-                    EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
+                if (_inputHandler.TriggerPressed) {
+                    _dialog.SetActive(false);
+                    return true;
                 }
+
                 break;
         }
+        return false;
     }
 }

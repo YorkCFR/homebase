@@ -132,7 +132,8 @@ public class HomeBaseDriver : MonoBehaviour
             {
                 case Enums.Experiment.ControlForward:
                     LinearForward linearForward = GetComponent<LinearForward>();
-                    linearForward.DoAdjustLinearTarget(_startTime, _sf);
+                    if(linearForward.DoAdjustLinearTarget(_startTime, _sf))
+                        QuitPlaying();
                     break;
                 case Enums.Experiment.ControlBackward:
                     LinearBackward linearBackward = GetComponent<LinearBackward>();
