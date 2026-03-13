@@ -113,9 +113,6 @@ public class LinearForward : MonoBehaviour
         _inputHandler = _camera.GetComponent<InputHandler>();
         ConstructConditions();
         _trackerLog = GetComponent<HeadTrackerLog> ();
-
-        Debug.Log($"tracker {_trackerLog==null}");
-
     }
 
     public void Restart()
@@ -174,12 +171,6 @@ public class LinearForward : MonoBehaviour
         {
             _linear_conditions[0][i] = p1[i];
             _linear_conditions[1][i] = p2[i];
-        }
-
-        for(int i = 0; i < NLINEAR + NPRACTICE; i++)
-        {
-            for(int j=0;j<3;j++)
-                Debug.Log(_linear_conditions[i][j]);
         }
     }
 

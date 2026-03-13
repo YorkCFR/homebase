@@ -177,7 +177,8 @@ public class TriangleCompletion : MonoBehaviour
         _triangle_conditions[45] = new float[5] { 8.0f, 7.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
         _triangle_conditions[46] = new float[5] { 8.0f, 7.0f, 120.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
         _triangle_conditions[47] = new float[5] { 8.0f, 7.0f, 105.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
+        _triangle_conditions[48] = new float[5];
+        _triangle_conditions[49] = new float[5];
 
 
         float[] z = new float[5];
@@ -199,8 +200,9 @@ public class TriangleCompletion : MonoBehaviour
         // slide the real conditions back and insert the practice conditions
         for(int i=(NTRIANG-1); i >= 0; i--)
         {
-            for(int j=0;j<5;j++)
+            for(int j=0;j<5;j++) {
                 _triangle_conditions[i+NPRACTICE][j] = _triangle_conditions[i][j];
+            }
         }
 
         for(int i=0; i<5; i++)
