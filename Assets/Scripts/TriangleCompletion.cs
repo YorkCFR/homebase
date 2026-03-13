@@ -20,7 +20,8 @@ using UnityEditor;
  * - click when aligned
  *
  * Version History
- * V2.0 - major refactoring
+ * V3.0 - version as of March 9th
+ * V2.0 - major refactoring based on Feb decisions
  * V1.0 - from the monolithic version
  *
  * Copyright (c) Michael Jenkin 2025, 2026.
@@ -49,7 +50,8 @@ public class TriangleCompletion : MonoBehaviour
  
     };
 
-    private const int NTRIANG = 24;                         // number of triangle completion conditions
+    private const int NTRIANG = 48;                         // number of triangle completion conditions
+    private const int NPRACTICE = 2;                        // Number of practice conditions
     private const float TARGET_START_DIST = 0.05f;          // target starts this far from you
     private const float WAIT_TIME = 0.2f;                   // Wait time in sec
     private const float ROTATE_VEL = 30.0f;                 // rotational velocity in deg/sec
@@ -95,7 +97,7 @@ public class TriangleCompletion : MonoBehaviour
     private float _directionDistanceInit;                   // initial direction distance
 
 
-    float[][] _triangle_conditions = new float[NTRIANG][];
+    float[][] _triangle_conditions = new float[NTRIANG+NPRACTICE][];
     private float _waitStart, _backwardTime, _waitStart2, _waitStart3, _turnStart, _motion2Start;
 
     private bool _KeyUpOld = false;
@@ -103,7 +105,7 @@ public class TriangleCompletion : MonoBehaviour
     private bool _AstateOld = false;
     private bool _BstateOld = false;
 
-    void Start()
+    public void Start()
     {
         _responseLog = new ResponseLog();
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
@@ -118,49 +120,65 @@ public class TriangleCompletion : MonoBehaviour
         ConstructConditions();
     }
 
+    public void Restart()
+    {
+        ConstructConditions();
+        _experimentState = ExperimentState.Initialize;
+        _responseLog = new ResponseLog();
+    }
+
     private void ConstructConditions()
     {
-        float[] c1  = new float[5] { 8.0f, 8.0f, 165.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c2  = new float[5] { 8.0f, 8.0f, 150.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c3  = new float[5] { 8.0f, 8.0f, 135.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[0]  = new float[5] { 8.0f, 3.0f, 150.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[1]  = new float[5] { 8.0f, 3.0f, 135.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[2]  = new float[5] { 8.0f, 3.0f, 120.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[3]  = new float[5] { 8.0f, 3.0f, 105.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[4]  = new float[5] { 8.0f, 3.0f, 150.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[5]  = new float[5] { 8.0f, 3.0f, 135.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[6]  = new float[5] { 8.0f, 3.0f, 120.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[7]  = new float[5] { 8.0f, 3.0f, 105.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[8]  = new float[5] { 8.0f, 3.0f, 150.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[9]  = new float[5] { 8.0f, 3.0f, 135.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[10] = new float[5] { 8.0f, 3.0f, 120.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[11] = new float[5] { 8.0f, 3.0f, 105.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[12] = new float[5] { 8.0f, 3.0f, 150.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[13] = new float[5] { 8.0f, 3.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[14] = new float[5] { 8.0f, 3.0f, 120.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[15] = new float[5] { 8.0f, 3.0f, 105.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[16] = new float[5] { 8.0f, 5.0f, 150.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[17] = new float[5] { 8.0f, 5.0f, 135.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[18] = new float[5] { 8.0f, 5.0f, 120.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[19] = new float[5] { 8.0f, 5.0f, 105.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[20] = new float[5] { 8.0f, 5.0f, 150.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[21] = new float[5] { 8.0f, 5.0f, 135.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[22] = new float[5] { 8.0f, 5.0f, 120.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[23] = new float[5] { 8.0f, 5.0f, 105.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[24] = new float[5] { 8.0f, 5.0f, 150.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[25] = new float[5] { 8.0f, 5.0f, 135.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[26] = new float[5] { 8.0f, 5.0f, 120.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[27] = new float[5] { 8.0f, 5.0f, 105.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[28] = new float[5] { 8.0f, 5.0f, 150.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[29] = new float[5] { 8.0f, 5.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[30] = new float[5] { 8.0f, 5.0f, 120.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[31] = new float[5] { 8.0f, 5.0f, 105.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[32] = new float[5] { 8.0f, 7.0f, 150.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[33] = new float[5] { 8.0f, 7.0f, 135.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[34] = new float[5] { 8.0f, 7.0f, 120.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[35] = new float[5] { 8.0f, 7.0f, 105.0f, 1.0f, 1.0f };   // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[36] = new float[5] { 8.0f, 7.0f, 150.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[37] = new float[5] { 8.0f, 7.0f, 135.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[38] = new float[5] { 8.0f, 7.0f, 120.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[39] = new float[5] { 8.0f, 7.0f, 105.0f, 1.0f, -1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[40] = new float[5] { 8.0f, 7.0f, 150.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[41] = new float[5] { 8.0f, 7.0f, 135.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[42] = new float[5] { 8.0f, 7.0f, 120.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[43] = new float[5] { 8.0f, 7.0f, 105.0f, -1.0f, 1.0f };  // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[44] = new float[5] { 8.0f, 7.0f, 150.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[45] = new float[5] { 8.0f, 7.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[46] = new float[5] { 8.0f, 7.0f, 120.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
+        _triangle_conditions[47] = new float[5] { 8.0f, 7.0f, 105.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
 
-        float[] c4  = new float[5] { 8.0f, 4.0f, 165.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c5  = new float[5] { 8.0f, 4.0f, 150.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c6  = new float[5] { 8.0f, 4.0f, 135.0f, 1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
 
-        float[] c7  = new float[5] { 8.0f, 8.0f, 165.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c8  = new float[5] { 8.0f, 8.0f, 150.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c9  = new float[5] { 8.0f, 8.0f, 135.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        float[] c10  = new float[5] { 8.0f, 4.0f, 165.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c11  = new float[5] { 8.0f, 4.0f, 150.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c12  = new float[5] { 8.0f, 4.0f, 135.0f, 1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        float[] c13 = new float[5] { 8.0f, 8.0f, 165.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c14  = new float[5] {8.0f, 8.0f, 150.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c15 = new float[5] { 8.0f, 8.0f, 135.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        float[] c16 = new float[5] { 8.0f, 4.0f, 165.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c17 = new float[5] { 8.0f, 4.0f, 150.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c18 = new float[5] { 8.0f, 4.0f, 135.0f, -1.0f, 1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        float[] c19 = new float[5] { 8.0f, 8.0f, 165.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c20 = new float[5] { 8.0f, 8.0f, 150.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c21 = new float[5] { 8.0f, 8.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        float[] c22  = new float[5] { 8.0f, 4.0f, 165.0f,-1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c23  = new float[5] { 8.0f, 4.0f, 150.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-        float[] c24  = new float[5] { 8.0f, 4.0f, 135.0f, -1.0f, -1.0f }; // l1, l2, theta, pan/tilt, dir1/dir2
-
-        _triangle_conditions[0] = c1; _triangle_conditions[1] = c2; _triangle_conditions[2] = c3;
-        _triangle_conditions[3] = c4; _triangle_conditions[4] = c5; _triangle_conditions[5] = c6;
-        _triangle_conditions[6] = c7; _triangle_conditions[7] = c8; _triangle_conditions[8] = c9;
-        _triangle_conditions[9] = c10; _triangle_conditions[10] = c11; _triangle_conditions[11] = c12;
-
-        _triangle_conditions[12] = c13; _triangle_conditions[13] = c14; _triangle_conditions[14] = c15;
-        _triangle_conditions[15] = c16; _triangle_conditions[16] = c17; _triangle_conditions[17] = c18;
-        _triangle_conditions[18] = c19; _triangle_conditions[19] = c20; _triangle_conditions[20] = c21;
-        _triangle_conditions[21] = c22; _triangle_conditions[22] = c23; _triangle_conditions[23] = c24;
 
         float[] z = new float[5];
         for(int i = 0; i < NTRIANG*10; i++)
@@ -175,10 +193,25 @@ public class TriangleCompletion : MonoBehaviour
                 _triangle_conditions[index2][j] = z[j];
         }
 
+        float[] p1 = new float[5] {8.0f, 6.0f, 125.0f, -1.0f, 1.0f};                   // dist, pan/tilt, direction sign
+        float[] p2 = new float[5] {8.0f, 4.0f, 110.0f, 1.0f, -1.0f};                   // dist, pan/tilt, direction sign
+
+        // slide the real conditions back and insert the practice conditions
+        for(int i=(NTRIANG-1); i >= 0; i--)
+        {
+            for(int j=0;j<5;j++)
+                _triangle_conditions[i+NPRACTICE][j] = _triangle_conditions[i][j];
+        }
+
+        for(int i=0; i<5; i++)
+        {
+            _triangle_conditions[0][i] = p1[i];
+            _triangle_conditions[1][i] = p2[i];
+        }
     }
 
     // Update is called once per frame
-   public void DoTriangleCompletion(long startTime, SphereField sf)
+   public bool DoTriangleCompletion(long startTime, SphereField sf)
     {
         float dist, angle, x, y, z, pan, tilt;
 
@@ -187,7 +220,7 @@ public class TriangleCompletion : MonoBehaviour
         {
             case ExperimentState.Initialize:
                 _d.SetBackground(instructionMaterial); 
-                _d.SetDialogElements("Triangle Completion", new string[] { "" });
+                _d.SetDialogElements("", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
                 _experimentState = ExperimentState.Setup;
                 _dialog.SetActive(true);
@@ -203,7 +236,7 @@ public class TriangleCompletion : MonoBehaviour
             case ExperimentState.BeforeMotion: // waiting before motion
                 Debug.Log($"BeforeMotion {_cond}");
 
-                if (_cond < NTRIANG)
+                if (_cond < (NTRIANG+NPRACTICE))
                 {
                     _length1 = _triangle_conditions[_cond][0];
                     _length2 = _triangle_conditions[_cond][1];
@@ -214,6 +247,7 @@ public class TriangleCompletion : MonoBehaviour
                     // set +ve spin direction depending on pitch and turnRight values
                     if (_pitch)
                     {
+                        _inputHandler.UseVerticalAxis();
                         if (_turnRight)
                             _spinDir = -1.0f;
                         else
@@ -221,6 +255,7 @@ public class TriangleCompletion : MonoBehaviour
                     }
                     else
                     {
+                        _inputHandler.UseHorizontalAxis();
                         if (_turnRight)
                             _spinDir = 1.0f;
                         else
@@ -233,7 +268,7 @@ public class TriangleCompletion : MonoBehaviour
                     _experimentState = ExperimentState.WaitForBackwardTarget;
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                    _d.SetDialogElements("Triangle Completion", new string[] { "Condition " + (1+_cond) + "/" + NTRIANG });
+                    _d.SetDialogElements("Triangle Completion", new string[] { "Condition " + (1+_cond) + "/" + (NTRIANG + NPRACTICE) });
                     _d.SetDialogInstructions("Press trigger to start");
                     _dialog.SetActive(true);
                     _trackerLog.StartRecording();
@@ -454,18 +489,18 @@ public class TriangleCompletion : MonoBehaviour
                     _responseLog.AddTriangle(_cond, _backwardTime, _length1, 180.0f - _turn, _pitch, _spinDir, _length2, _directionDistanceInit, _directionDistance, _directionAngle);
                     _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_triangle_completion_" + startTime + "_" + _cond + ".txt");
 
-                    if (_cond < NTRIANG - 1)
+                    if (_cond < (NTRIANG + NPRACTICE - 1))
                     {
                         _cond = _cond + 1;
                         _experimentState = ExperimentState.BeforeMotion;
                     }
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_triangle_" + startTime + ".txt", "cond, backtime, len1, angle, pitch, spindir, len2, dirinit, dirfinal, anglefinal");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_triangle_" + startTime + ".txt", "cond, backtime, len1, angle, pitch, spindir, len2, dirinit, dirfinal, anglefinal, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                         _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                        _d.SetDialogElements("Completed", new string[] { "" });
-                        _d.SetDialogInstructions("Press trigger to quit");
+                        _d.SetDialogElements("Task completed", new string[] { "" });
+                        _d.SetDialogInstructions("Press trigger to continue");
                         _dialog.SetActive(true);
                         _experimentState = ExperimentState.Done;
                     }
@@ -474,13 +509,11 @@ public class TriangleCompletion : MonoBehaviour
             case ExperimentState.Done: 
                 if (_inputHandler.TriggerPressed)
                 {
-#if UNITY_EDITOR
-                    EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
+                    _dialog.SetActive(false);
+                    return(true);
                 }
                 break;
         }
+        return(false);
     }
 }

@@ -18,18 +18,19 @@ public class TopLevelMenu : MonoBehaviour
      private enum UIState
     {
         Initialize,
-        ControlOrTriangle,
-        SelectControl,
-        ConfirmScreen,
-        Done
+        TopLevel,
     };
     private UIState _uiState = UIState.Initialize;
 
-    
-    private Enums.Experiment _confirmExperiment = Enums.Experiment.None; // note: Waiting is not valid for this
+
 
     public void Start()
     {
+    }
+
+    public void Reset()
+    {
+        _uiState = UIState.Initialize;
     }
  
     public Enums.Experiment DealWithMenu()
@@ -42,86 +43,42 @@ public class TopLevelMenu : MonoBehaviour
         {
             case UIState.Initialize:  // bring up the choose experiment screen
                 _dialog.SetActive(true);
-                d.SetDialogElements("Choose Experiment", new string[] { "Component Experiments", "Triangle Completion Experiment", "Quit Homebase"});
-                _uiState = UIState.ControlOrTriangle;
+                d.SetDialogElements("Select Task", new string[] { "Tutorial", "Components", "Triangle Completion", "Quit Homebase", "Linear Forward Component", "Linear Backward Component", "Rotational Component"});
+                _uiState = UIState.TopLevel;
                 return(Enums.Experiment.Waiting);
-            case UIState.ControlOrTriangle: 
+            case UIState.TopLevel: 
                 int resp = d.GetResponse();
                 switch (resp)
                 {
                     case 0: 
-                        d.SetDialogElements("Choose Control", new string[] { "Linear Forward Component", "Linear Backward Component", "Rotation Component", "Back" });
-                        _uiState = UIState.SelectControl;
-                        return(Enums.Experiment.Waiting);
-                    case 1:
-                        d.SetDialogElements("Confirm Choice", new string[] {"Do 'Triangle Completion Experiment'", "Back"});
-                        _confirmExperiment = Enums.Experiment.TriangleCompletion;
-                        _uiState = UIState.ConfirmScreen;
-                        return(Enums.Experiment.Waiting);
-                    case 2:
-                        _uiState = UIState.Done;
-                        return(Enums.Experiment.Quit);
-                    case -1:
-                        return(Enums.Experiment.Waiting);
-                }
-                Debug.Log("Not Reached (TopLevelMenu) control or triangle " + resp);
-                return(Enums.Experiment.Waiting);
-            case UIState.SelectControl:
-                int resp2 = d.GetResponse();
-                switch (resp2)
-                {
-                    case 0: 
-                        d.SetDialogElements("Confirm Choice", new string[] {"Do Linear Forward Component Experiment", "Back"});
-                        _confirmExperiment = Enums.Experiment.ControlForward;
-                        _uiState = UIState.ConfirmScreen;
-                        return(Enums.Experiment.Waiting);
-                    case 1:
-                        d.SetDialogElements("Confirm Choice", new string[] {"Do Linear Backward Component Experiment", "Back"});
-                        _confirmExperiment = Enums.Experiment.ControlBackward;
-                        _uiState = UIState.ConfirmScreen;
-                        return(Enums.Experiment.Waiting);
-                    case 2:
-                        d.SetDialogElements("Confirm Choice", new string[] {"Do Rotation Component Experiment", "Back"});
-                        _confirmExperiment = Enums.Experiment.ControlRotation;
-                        _uiState = UIState.ConfirmScreen;
-                        return(Enums.Experiment.Waiting);
-                    case 3:
-                     d.SetDialogElements("Choose Experiment", new string[] { "Component Experiments", "Triangle Completion Experiment", "Quit Homebase"});
-                    _uiState = UIState.ControlOrTriangle;
-                    return(Enums.Experiment.Waiting);
-                    case -1:
-                        return(Enums.Experiment.Waiting);
-                }
-                Debug.Log("Not Reached (TopLevelMenu) selectcontrol " + resp2);
-                return(Enums.Experiment.Waiting);
-            case UIState.ConfirmScreen:
-                int confirm = d.GetResponse();
-                switch(confirm)
-                {
-                    case 0:
-                        _uiState = UIState.Done;
                         _dialog.SetActive(false);
-                        return(_confirmExperiment);
+                        return(Enums.Experiment.Tutorial);
                     case 1:
-                        if(_confirmExperiment == Enums.Experiment.TriangleCompletion) {
-                            d.SetDialogElements("Choose Experiment", new string[] { "Control Experiments", "Triangle Completion Experiment", "Quit Homebase"});
-                            _uiState = UIState.ControlOrTriangle;
-                        } 
-                        else
-                        {
-                            d.SetDialogElements("Choose Control", new string[] { "Linear Forward Control", "Linear Backward Control", "Rotation Control" });
-                            _uiState = UIState.SelectControl;
-                        }
-                        return(Enums.Experiment.Waiting);
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.ControlAll);
+                    case 2:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.TriangleCompletion);
+                    case 3:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.Quit);
+                    case 4:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.ControlForward);
+                    case 5:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.ControlBackward);
+                    case 6:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.ControlRotation);
                     case -1:
                         return(Enums.Experiment.Waiting);
                 }
-                Debug.Log("Not reached (TopLevel Menu) confirmscreen");
+                Debug.Log("Not Reached (MidLevelMenu)  " + resp);
                 return(Enums.Experiment.Waiting);
-            case UIState.Done:
+            default:
+                Debug.Log("Not Reached (TopLevelMenu)  ");
                 return(Enums.Experiment.Waiting);
         }
-        Debug.Log("Not reached (TopLevel Menu) uistate " + _uiState);
-        return(Enums.Experiment.None);
     }
 }

@@ -94,7 +94,8 @@ public class RotationControl : MonoBehaviour
     private bool _KeyDownOld = false;
 
     float[][] _rotation_conditions = new float[NROTATION+NPRACTICE][];   // the conditions
-    void Start()
+    
+    public void Start()
     {
         _responseLog = new ResponseLog();
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
@@ -109,7 +110,14 @@ public class RotationControl : MonoBehaviour
         ConstructConditions();
     }
 
-     private void ConstructConditions()
+    public void Restart()
+    {
+        ConstructConditions();
+        _experimentState = ExperimentState.Initialize;
+        _responseLog = new ResponseLog();
+    }
+
+    private void ConstructConditions()
     {
         //note: angles are 180-angle shown
         _rotation_conditions[0]  = new float[3] {90.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2

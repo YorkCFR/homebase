@@ -4,7 +4,9 @@
  *  options for the editor.
  * 
  *  Version History
- *. v1.1 - Dec 1, 2025. Deal with new input model
+ *  V3.0 - March refactoring
+ *  V2.0 - February refactoring
+ *  v1.1 - Dec 1, 2025. Deal with new input model
  *  V1.0 - July 27, 2020. Initial version
  * 
  *  Michael Jenkin
@@ -96,21 +98,18 @@ public class Dialog : MonoBehaviour
             return;
         
         if(_inputHandler.KeyDown)
-       // if (Input.GetKeyDown("up")|| Input.GetKeyDown(KeyCode.JoystickButton5))
         {
             this.currentChoice = (this.currentChoice + this.choices.Length - 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
             _inputHandler.InputReset();
         }
         if(_inputHandler.KeyUp)
-        //if(Input.GetKeyDown("down")|| Input.GetKeyDown(KeyCode.JoystickButton4))
         {
             this.currentChoice = (this.currentChoice + 1) % this.choices.Length;
             this.choice.GetComponent<TextMesh>().text = choices[this.currentChoice];
             _inputHandler.InputReset();
         }
         if(_inputHandler.TriggerPressed)
-        //if(Input.GetKeyDown("x")|| Input.GetKeyDown(KeyCode.JoystickButton0))
         {
             this.hasResponse = true;
         }

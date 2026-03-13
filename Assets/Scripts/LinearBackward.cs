@@ -118,6 +118,13 @@ public class LinearBackward : MonoBehaviour
         ConstructConditions();
     }
 
+    public void Restart()
+    {
+        ConstructConditions();
+        _experimentState = ExperimentState.Initialize;
+        _responseLog = new ResponseLog();
+    }
+
     private void ConstructConditions()
     {
 

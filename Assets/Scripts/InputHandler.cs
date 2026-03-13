@@ -44,6 +44,7 @@ public class InputHandler : MonoBehaviour
     /**
      * Process the input items we are interested in and encode KeyUp and KeyDown
      * and debounce these values. 
+     *
      **/
     void Update()
     {

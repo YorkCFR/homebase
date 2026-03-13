@@ -118,6 +118,13 @@ public class LinearForward : MonoBehaviour
 
     }
 
+    public void Restart()
+    {
+        ConstructConditions();
+        _experimentState = ExperimentState.Initialize;
+        _responseLog = new ResponseLog();
+    }
+
 
     private void ConstructConditions()
     {
@@ -399,7 +406,7 @@ public class LinearForward : MonoBehaviour
                         "cond, starttime, targetd,  rotation, pitch, spinDir, inittarget, finaltarget, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });
-                        _d.SetDialogInstructions("Press trigger to quit");
+                        _d.SetDialogInstructions("Press trigger to continue");
                         _dialog.SetActive(true);
                         _experimentState = ExperimentState.Done;
                     }
