@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
  * This uses unity's input mmodel to map to the A, B, trigger and joystick inputs.
  *
  * Version History
+ * V3.0 - version as of March 9th
+ * V2.0 - the version of February 17th
  * V1.0 - extracted from the monolithic code from earlier versions.
  * Michael Jenkin, 2026.
  **/
@@ -37,6 +39,8 @@ public class InputHandler : MonoBehaviour
     private bool UpDownReset = false;
     private bool LastTriggerPress = false;
 
+    private int _axis = 0;
+
     /**
      * Process the input items we are interested in and encode KeyUp and KeyDown
      * and debounce these values. 
@@ -50,12 +54,12 @@ public class InputHandler : MonoBehaviour
         {
             if(UpDownReset)
             {
-                if(thumbstickValue[0] > 0.5f)
+                if(thumbstickValue[_axis] > 0.5f)
                 {
                     KeyUp = true;
                     UpDownReset = false;
                 }
-                if(thumbstickValue[0] < -0.5f)
+                if(thumbstickValue[_axis] < -0.5f)
                 {
                     KeyDown = true;
                     UpDownReset = false;
@@ -93,6 +97,16 @@ public class InputHandler : MonoBehaviour
         //Debug.Log($" a button is {Astate}");
         Bstate = bButton.action.ReadValue<float>() > 0.5;;
         //Debug.Log($"b button is {Bstate}");
+    }
+
+    public void UseHorizontalAxis()
+    {
+        _axis = 0;
+    }
+
+    public void UseVerticalAxis()
+    {
+        _axis = 1;
     }
 
     public void InputReset()

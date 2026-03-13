@@ -5,6 +5,15 @@ using UnityEditor;
  * Rotation control experiment
  *
  * Rotation only
+ *
+ * March 9th
+ *  - thumbstick works in horizontal/vertical
+ *  - 1.5s delay showing fixed target then automatically move to rotation
+ *  - set of conditions revised
+ *  - practice conditions added
+ *  - program exit removed
+ *
+ * February 17th 
  *  - pointer appears in front
  *  - press to start
  *  - point is extinguished
@@ -19,7 +28,8 @@ using UnityEditor;
  * For 3 x 2 x 2 = 12 conditions
  *
  * Version control
- *.    V2.1 match the motion (rather than return to 0)
+*      V3.0 - version based on March 9th revisions
+ *     V2.1 match the motion (rather than return to 0)
  *     V2.0 borrowed from the initial prototype version and modified as per the notes of the 17th
  *     V1.0 initial version from the monolith program
  *
@@ -48,10 +58,12 @@ public class RotationControl : MonoBehaviour
     };
 
 
-    private const int NROTATION = 12;                       // number of rotation conditions
+    private const int NROTATION = 24;                       // number of rotation conditions
+    private const int NPRACTICE = 2;                        // number of practice conditions
     private const float TARGET_DISTANCE = 2.0f;             // distance to orientaiton reticle (m)
     private const float RETICLE_DISTANCE = 2.0f;            // distance to reticle (m)
     private const float SPINV = 30.0f;                      // abs rotational velocity deg/sec
+    private const float TARGET_VIEW_TIME =0.5f;             // how long to view the target before it goes away
     private const float MIN_TURN_ANGLE = -180.0f;           // minimm turn angle
     private const float MAX_TURN_ANGLE = 180.0f;            // maximumm turn angle
     private const float MIN_TURN_STEP = 0.1f;               // minimum turn step (deg)
@@ -66,8 +78,9 @@ public class RotationControl : MonoBehaviour
     private GameObject _target;
     private InputHandler _inputHandler;
     private ExperimentState _experimentState = ExperimentState.Initialize;    // current state of the experiment
-    private ResponseLog _responseLog;   // the response log
-    private HeadTrackerLog _trackerLog;
+    private ResponseLog _responseLog;                       // the response log
+    private HeadTrackerLog _trackerLog;                     // head tracker log
+    private float _targetViewStartTime;                     // start time of the reference target
 
     private int _cond;                                      // current condition number (starts from 0)
     private float _spinDir = 1.0f;                          // spin direction
@@ -80,7 +93,7 @@ public class RotationControl : MonoBehaviour
     private bool _KeyUpOld = false;
     private bool _KeyDownOld = false;
 
-    float[][] _rotation_conditions = new float[NROTATION][];   // the conditions
+    float[][] _rotation_conditions = new float[NROTATION+NPRACTICE][];   // the conditions
     void Start()
     {
         _responseLog = new ResponseLog();
@@ -99,30 +112,32 @@ public class RotationControl : MonoBehaviour
      private void ConstructConditions()
     {
         //note: angles are 180-angle shown
-        float[] r1  = new float[3] {135.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r2  = new float[3] {150.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r3  = new float[3] {165.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r4  = new float[3] {135.0f, 1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r5  = new float[3] {150.0f, 1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r6  = new float[3] {165.0f, 1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r7  = new float[3] {135.0f,-1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r8  = new float[3] {150.0f,-1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r9  = new float[3] {165.0f,-1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r10 = new float[3] {135.0f,-1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r11 = new float[3] {150.0f,-1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        float[] r12 = new float[3] {165.0f,-1.0f,-1.0f}; // a1, pan/tilt, dir1/dir2
-        _rotation_conditions[0] = r1;
-        _rotation_conditions[1] = r2;
-        _rotation_conditions[2] = r3;
-        _rotation_conditions[3] = r4;
-        _rotation_conditions[4] = r5;
-        _rotation_conditions[5] = r6;
-        _rotation_conditions[6] = r7;
-        _rotation_conditions[7] = r8;
-        _rotation_conditions[8] = r9;
-        _rotation_conditions[9] = r10;
-        _rotation_conditions[10] = r11;
-        _rotation_conditions[11] = r12;
+        _rotation_conditions[0]  = new float[3] {90.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[1]  = new float[3] {105.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[2]  = new float[3] {120.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[3]  = new float[3] {135.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[4]  = new float[3] {150.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[5]  = new float[3] {165.0f, 1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[6]  = new float[3] {90.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[7]  = new float[3] {105.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[8]  = new float[3] {120.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[9]  = new float[3] {135.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[10] = new float[3] {150.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[11] = new float[3] {165.0f, -1.0f, 1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[12] = new float[3] {90.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[13] = new float[3] {105.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[14] = new float[3] {120.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[15] = new float[3] {135.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[16] = new float[3] {150.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[17] = new float[3] {165.0f, 1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[18] = new float[3] {90.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[19] = new float[3] {105.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[20] = new float[3] {120.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[21] = new float[3] {135.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[22] = new float[3] {150.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[23] = new float[3] {165.0f, -1.0f, -1.0f}; // a1, pan/tilt, dir1/dir2
+        _rotation_conditions[24] = new float[3];
+        _rotation_conditions[25] = new float[3];
         
         float[] z = new float[3];
         for(int i = 0; i < NROTATION*10; i++)
@@ -136,10 +151,26 @@ public class RotationControl : MonoBehaviour
             for(int j=0;j<3;j++)
                 _rotation_conditions[index2][j] = z[j];
         }
+
+        float[] p1 = new float[3] {125.0f, 1.0f, 1.0f};   // dist, pan/tilt, direction sign
+        float[] p2 = new float[3] {110.0f, -1.0f, 1.0f};   // dist, pan/tilt, direction sign
+
+        // slide the real conditions back and insert the practice conditions
+        for(int i=(NROTATION-1); i >= 0; i--)
+        {
+            for(int j=0;j<3;j++)
+                _rotation_conditions[i+NPRACTICE][j] = _rotation_conditions[i][j];
+        }
+
+        for(int i=0; i<3; i++)
+        {
+            _rotation_conditions[0][i] = p1[i];
+            _rotation_conditions[1][i] = p2[i];
+        }
     }
 
 
-    public void DoRotationControl(long startTime, SphereField sf)
+    public bool DoRotationControl(long startTime, SphereField sf)
     {
         float angle, x, y, z, pan, tilt;
 
@@ -148,7 +179,7 @@ public class RotationControl : MonoBehaviour
         {
             case ExperimentState.Initialize:
                 _d.SetBackground(instructionMaterial); 
-                _d.SetDialogElements("Rotation Motion", new string[] { "" });
+                _d.SetDialogElements("", new string[] { "" });
                 _d.SetDialogInstructions("Press trigger to start");
                 _experimentState = ExperimentState.Setup;
                 _dialog.SetActive(true);
@@ -164,7 +195,7 @@ public class RotationControl : MonoBehaviour
             case ExperimentState.BeforeMotion: // waiting before motion
                 Debug.Log($"BeforeMotion {_cond}");
 
-                if (_cond < NROTATION)
+                if (_cond < (NROTATION + NPRACTICE))
                 {
                     _turn = 180.0f - _rotation_conditions[_cond][0];
                     _pitch = _rotation_conditions[_cond][1] > 0;
@@ -173,6 +204,7 @@ public class RotationControl : MonoBehaviour
                     // set +ve spin direction depending on pitch and turnRight values
                     if (_pitch)
                     {
+                        _inputHandler.UseVerticalAxis();
                         if (_turnRight)
                             _spinDir = -1.0f;
                         else
@@ -180,6 +212,7 @@ public class RotationControl : MonoBehaviour
                     }
                     else
                     {
+                        _inputHandler.UseHorizontalAxis();
                         if (_turnRight)
                             _spinDir = 1.0f;
                         else
@@ -192,7 +225,7 @@ public class RotationControl : MonoBehaviour
                     _experimentState = ExperimentState.WaitForButtonPress;
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                    _d.SetDialogElements("Rotational Motion", new string[] { "Condition " + (1+_cond) + "/" + NROTATION });
+                    _d.SetDialogElements("Rotational Motion", new string[] { "Condition " + (1+_cond) + "/" + (NROTATION + NPRACTICE) });
                     _d.SetDialogInstructions("Press trigger to start");
                     _dialog.SetActive(true);
                     _trackerLog.StartRecording();
@@ -206,10 +239,11 @@ public class RotationControl : MonoBehaviour
                     _target.transform.rotation = Quaternion.Euler(0.0f,0.0f,0.0f);
                     _target.SetActive(true);
                     _experimentState = ExperimentState.WaitToTurn;
+                    _targetViewStartTime = Time.time;
                 }
                 break;
             case ExperimentState.WaitToTurn:
-                if(_inputHandler.TriggerPressed)
+                if((Time.time - _targetViewStartTime) > TARGET_VIEW_TIME)
                 {
                     _turnStart = Time.time;
                     _target.SetActive(false);
@@ -321,16 +355,16 @@ public class RotationControl : MonoBehaviour
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
-                    if(_cond < NROTATION - 1)
+                    if(_cond < (NROTATION+NPRACTICE) - 1)
                     {
                         _cond = _cond + 1;
                         _experimentState = ExperimentState.BeforeMotion;
                     } 
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, motion, rotation, pitch, spindir, inittarget, finaltarget");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, rotation, pitch, spindir, response, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _d.SetDialogElements("Completed", new string[] { "" });
-                        _d.SetDialogInstructions("Press trigger to quit");
+                        _d.SetDialogInstructions("Press trigger to continue");
                         _dialog.SetActive(true);
                         _experimentState = ExperimentState.Done;
                     }
@@ -339,14 +373,11 @@ public class RotationControl : MonoBehaviour
             case ExperimentState.Done:
                 if (_inputHandler.TriggerPressed)
                 {
-#if UNITY_EDITOR
-                    EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
+                    _dialog.SetActive(false);
+                    return(true);
                 }
                 break;
         }
-
+        return(false);
     }
 }

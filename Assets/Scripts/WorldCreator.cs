@@ -11,6 +11,7 @@ using System.IO;  // for USB access
  * Copyright Michael Jenkin 2025, 2026
  * Version History
  * 
+ * V3.0 - Updates after the 9th of March
  * V2.5 - Updates after the 17th of Feb
  * V2.1 - ensure output even if no user input (?)
  * V2.0 - updated triangle completion task

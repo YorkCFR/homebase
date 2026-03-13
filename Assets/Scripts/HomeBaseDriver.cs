@@ -142,7 +142,8 @@ public class HomeBaseDriver : MonoBehaviour
                     break;
                 case Enums.Experiment.ControlRotation:
                     RotationControl rotationControl = GetComponent<RotationControl>();
-                    rotationControl.DoRotationControl(_startTime, _sf);
+                    if(rotationControl.DoRotationControl(_startTime, _sf))
+                        QuitPlaying();
                     break;
                 case Enums.Experiment.TriangleCompletion:
                     TriangleCompletion triangleCompletion = GetComponent<TriangleCompletion>();
