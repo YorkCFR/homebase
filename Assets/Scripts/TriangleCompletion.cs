@@ -464,7 +464,7 @@ public class TriangleCompletion : MonoBehaviour
                 if (_pitch)
                 {
                     pan = 0.0f;
-                    tilt = _spinDir * (_turn + _directionAngle);
+                    tilt = _spinDir * _turn + _directionAngle;  // was (_turn + _directionAngle)
                     _camera.transform.rotation = Quaternion.Euler(tilt, pan, 0.0f);
                     x = 0;
                     y = -_directionDistance * Mathf.Sin(3.1415f * tilt / 180.0f);
@@ -473,7 +473,7 @@ public class TriangleCompletion : MonoBehaviour
                     _reticle.transform.position = new Vector3(x + _camera.transform.position.x, y + _camera.transform.position.y, z + _camera.transform.position.z);
                     Debug.Log($"Pitch angle {_turn} {_directionAngle}");
                 } else {
-                    pan = _spinDir * (_turn + _directionAngle);
+                    pan = _spinDir * _turn + _directionAngle; // was (_turn + _directionAngle)
                     tilt = 0.0f;
                     _camera.transform.rotation = Quaternion.Euler(tilt, pan, 0.0f);
                     x = _directionDistance * Mathf.Sin(3.1415f * pan / 180.0f);

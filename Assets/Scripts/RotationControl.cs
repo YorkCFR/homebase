@@ -330,7 +330,7 @@ public class RotationControl : MonoBehaviour
                 if (_pitch)
                 {
                     pan = 0.0f;
-                    tilt = _spinDir * (_turn + _turnAngle);
+                    tilt = _spinDir * _turn + _turnAngle; // was (_turn + _turnAngle)
                     _camera.transform.rotation = Quaternion.Euler(tilt, pan, 0.0f);
 
                     x = 0;
@@ -340,7 +340,7 @@ public class RotationControl : MonoBehaviour
                     _reticle.transform.position = new Vector3(x, y, z);
                     Debug.Log($"Pitch angle {_turn} {_turnAngle}");
                 } else {
-                    pan = _spinDir * (_turn + _turnAngle);
+                    pan = _spinDir * _turn + _turnAngle; // was (_turn + _turnAngle)
                     tilt = 0.0f;
                     _camera.transform.rotation = Quaternion.Euler(tilt, pan, 0.0f);
 

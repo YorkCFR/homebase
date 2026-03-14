@@ -103,11 +103,17 @@ public class InputHandler : MonoBehaviour
     public void UseHorizontalAxis()
     {
         _axis = 0;
+        UpDownReset = true;
+        KeyUp = false;
+        KeyDown = false;
     }
 
     public void UseVerticalAxis()
     {
         _axis = 1;
+        UpDownReset = true;
+        KeyUp = false;
+        KeyDown = false;
     }
 
     public void InputReset()
