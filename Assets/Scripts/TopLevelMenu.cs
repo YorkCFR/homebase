@@ -21,11 +21,14 @@ public class TopLevelMenu : MonoBehaviour
         TopLevel,
     };
     private UIState _uiState = UIState.Initialize;
+    private InputHandler _inputHandler;
 
 
 
     public void Start()
     {
+        GameObject camera = GameObject.Find("Camera Holder");
+        _inputHandler = camera.GetComponent<InputHandler>();
     }
 
     public void Reset()
@@ -43,7 +46,8 @@ public class TopLevelMenu : MonoBehaviour
         {
             case UIState.Initialize:  // bring up the choose experiment screen
                 _dialog.SetActive(true);
-                d.SetDialogElements("Select Task", new string[] { "Tutorial", "Components", "Triangle Completion", "Quit Homebase", "Linear Forward Component", "Linear Backward Component", "Rotational Component"});
+                _inputHandler.UseHorizontalAxis();
+                d.SetDialogElements("Select Task", new string[] { "Do Tutorial", "Component Tasks", "Triangle Completion Task", "Quit Homebase", "*Linear Forward Component*", "*Linear Backward Component*", "*Rotational Component*"});
                 _uiState = UIState.TopLevel;
                 return(Enums.Experiment.Waiting);
             case UIState.TopLevel: 
