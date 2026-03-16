@@ -370,7 +370,7 @@ public class RotationControl : MonoBehaviour
                     } 
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, rotation, pitch, spindir, response, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, rotation, pitch, spinDir, response, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to continue");
                         _dialog.SetActive(true);

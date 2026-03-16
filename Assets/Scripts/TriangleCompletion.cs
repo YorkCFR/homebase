@@ -498,7 +498,7 @@ public class TriangleCompletion : MonoBehaviour
                     }
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_triangle_" + startTime + ".txt", "cond, backtime, len1, angle, pitch, spindir, len2, dirinit, dirfinal, anglefinal, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
+                        _responseLog.Dump(Application.persistentDataPath + "/Responses_triangle_" + startTime + ".txt", "cond, backtime, len1, angle, pitch, spinDir, len2, dirinit, dirfinal, anglefinal, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                         _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                         _d.SetDialogElements("Task completed", new string[] { "" });
