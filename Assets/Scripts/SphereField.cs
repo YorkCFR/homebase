@@ -5,8 +5,8 @@
  * Copyright Michael Jenkin 2025, 2026
  * Version History
  * 
- * V4.0 - yet another substantive re-write based on changes in the experiment 
- * V3.0 - yet anothr substantive re-write of how to generate the random field.
+ * V3.0 - yet another substantive re-write based on changes in the experiment 
+ * V2.5 - yet anothr substantive re-write of how to generate the random field.
  * V2.0 - substantive update based on revised experimental structure
  * V1.0 - based on the OSC software
  **/

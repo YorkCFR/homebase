@@ -7,9 +7,13 @@ using UnityEngine;
 /**
  * Log head and CameraHolder state
  *
- * Version Log
- *    V1.0 - initial version.
- * Copyright Michael Jenkin, 2026
+ *  Version History
+ *  V3.0 - March refactoring
+ *  V2.0 - February refactoring
+ *  v1.1 - Dec 1, 2025. Deal with new input model
+ *  V1.0 - July 27, 2020. Initial version
+ * 
+ *  Copyright Michael Jenkin, 2026
  **/
 
 public class HeadTrackerLog : MonoBehaviour

@@ -378,7 +378,7 @@ public class LinearForward : MonoBehaviour
                     Debug.Log("response logged");
                     Debug.Log(Application.persistentDataPath);
                     Debug.Log($"tracker {_trackerLog==null}");
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_formward_" + startTime + "_" + _cond + ".txt");
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_forward_" + startTime + "_" + _cond + ".txt");
                     Debug.Log("tracker logged");
                     _reticle.SetActive(false);
                     Debug.Log("reticle off");

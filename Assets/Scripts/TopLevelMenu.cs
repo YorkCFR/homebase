@@ -4,6 +4,8 @@ using UnityEngine;
  * Do the top levels of the menu item
  *
  * Version Histroy
+ * V3.0 - March refactoring
+ * V2.0 - February refactoring
  * V1.1 - minor bug tweaks and better 'back' performance
  * V1.0 - refactoring of the initial system.
  *
@@ -47,7 +49,7 @@ public class TopLevelMenu : MonoBehaviour
             case UIState.Initialize:  // bring up the choose experiment screen
                 _dialog.SetActive(true);
                 _inputHandler.UseHorizontalAxis();
-                d.SetDialogElements("Select Task", new string[] { "Do Tutorial", "Component Tasks", "Triangle Completion Task", "Quit Homebase", "*Linear Forward Component*", "*Linear Backward Component*", "*Rotational Component*"});
+                d.SetDialogElements("Select Task", new string[] { "Do Tutorial", "Component Tasks", "Triangle Completion Task", "Quit Homebase"});
                 _uiState = UIState.TopLevel;
                 return(Enums.Experiment.Waiting);
             case UIState.TopLevel: 
@@ -66,6 +68,7 @@ public class TopLevelMenu : MonoBehaviour
                     case 3:
                         _dialog.SetActive(false);
                         return(Enums.Experiment.Quit);
+/* Keep these in case ever needed again
                     case 4:
                         _dialog.SetActive(false);
                         return(Enums.Experiment.ControlForward);
@@ -75,13 +78,12 @@ public class TopLevelMenu : MonoBehaviour
                     case 6:
                         _dialog.SetActive(false);
                         return(Enums.Experiment.ControlRotation);
+*/
                     case -1:
                         return(Enums.Experiment.Waiting);
                 }
-                Debug.Log("Not Reached (MidLevelMenu)  " + resp);
                 return(Enums.Experiment.Waiting);
             default:
-                Debug.Log("Not Reached (TopLevelMenu)  ");
                 return(Enums.Experiment.Waiting);
         }
     }
