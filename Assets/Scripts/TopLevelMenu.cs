@@ -4,6 +4,8 @@ using UnityEngine;
  * Do the top levels of the menu item
  *
  * Version Histroy
+ * V3.06 - minor changes to menu structure/operation
+ * V3.05 - version submitted to CSA in mid-March
  * V3.0 - March refactoring
  * V2.0 - February refactoring
  * V1.1 - minor bug tweaks and better 'back' performance
@@ -49,7 +51,7 @@ public class TopLevelMenu : MonoBehaviour
             case UIState.Initialize:  // bring up the choose experiment screen
                 _dialog.SetActive(true);
                 _inputHandler.UseHorizontalAxis();
-                d.SetDialogElements("Select Task", new string[] { "Do Tutorial", "Component Tasks", "Triangle Completion Task", "Quit Homebase"});
+                d.SetDialogElements("Select Task", new string[] { "Component Tasks Tutorial", "Triangle Completion Tutorial", "Component Tasks", "Triangle Completion Task", "Quit Homebase"});
                 _uiState = UIState.TopLevel;
                 return(Enums.Experiment.Waiting);
             case UIState.TopLevel: 
@@ -58,14 +60,17 @@ public class TopLevelMenu : MonoBehaviour
                 {
                     case 0: 
                         _dialog.SetActive(false);
-                        return(Enums.Experiment.Tutorial);
-                    case 1:
+                        return(Enums.Experiment.ComponentTasksTutorial);
+                    case 1: 
                         _dialog.SetActive(false);
-                        return(Enums.Experiment.ControlAll);
+                        return(Enums.Experiment.TriangleCompletionTutorial);
                     case 2:
                         _dialog.SetActive(false);
-                        return(Enums.Experiment.TriangleCompletion);
+                        return(Enums.Experiment.ControlAll);
                     case 3:
+                        _dialog.SetActive(false);
+                        return(Enums.Experiment.TriangleCompletion);
+                    case 4:
                         _dialog.SetActive(false);
                         return(Enums.Experiment.Quit);
 /* Keep these in case ever needed again

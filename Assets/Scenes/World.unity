@@ -259,7 +259,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198805126}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 9f14f58daf86a47b3826e119018074c9, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: deb9108021f81431fa0b4a7207d57234, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -503,6 +503,8 @@ MonoBehaviour:
   HomeBase: {fileID: 1964602097}
   Dialog: {fileID: 1194612033}
   MovieScreen: {fileID: 198805126}
+  TriangleTutorial: {fileID: 32900000, guid: deb9108021f81431fa0b4a7207d57234, type: 3}
+  ComponentTutorial: {fileID: 32900000, guid: a92b99b8aff424d5285bfbaf5739316b, type: 3}
 --- !u!114 &234017188
 MonoBehaviour:
   m_ObjectHideFlags: 0
