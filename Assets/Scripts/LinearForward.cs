@@ -29,9 +29,10 @@ using UnityEditor;
  *
  *
  * Version History
- * V3.0 - version based on March 9th revisions
- * V2.0 - version based on Feb 17th revisions
- * V1.0 - lifted from the original monolithic version prior to refactoring.
+ *      V3.07 - put output in a directory to avoid problems with the pi bridge
+ *      V3.0 - version based on March 9th revisions
+ *      V2.0 - version based on Feb 17th revisions
+ *      V1.0 - lifted from the original monolithic version prior to refactoring.
  *
  * Michael Jenkin, 2026
  **/
@@ -68,7 +69,7 @@ public class LinearForward : MonoBehaviour
     private const float MAX_MOTION_STEP = 0.5f;            // motion step maximum
     private const float MOTION_STEP_MULTIPLIER = 1.1f;      // motion step multiplier
  
-
+    private string _outputDir;                              // output directory
     private Dialog _d;                                      // Dialog interface
     private GameObject _dialog;                             // Dialog Gameobject
     private GameObject _camera;
@@ -107,6 +108,7 @@ public class LinearForward : MonoBehaviour
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
         _dialog = driver.Dialog;
         _d = _dialog.GetComponent<Dialog>();
+        _outputDir = driver.SAVEDIR;
         _experimentState = ExperimentState.Initialize;
         _camera = GameObject.Find("Camera Holder");
         _reticle = driver.AdjustableTarget;
@@ -378,7 +380,7 @@ public class LinearForward : MonoBehaviour
                     Debug.Log("response logged");
                     Debug.Log(Application.persistentDataPath);
                     Debug.Log($"tracker {_trackerLog==null}");
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_forward_" + startTime + "_" + _cond + ".txt");
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/" + _outputDir + "/HeadTracking_linear_forward_" + startTime + "_" + _cond + ".txt");
                     Debug.Log("tracker logged");
                     _reticle.SetActive(false);
                     Debug.Log("reticle off");
@@ -393,7 +395,7 @@ public class LinearForward : MonoBehaviour
                         Debug.Log($"going back for next condition {_cond}");
                     } else {
                         Debug.Log("saving data");
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_forward_" + startTime + ".txt",
+                        _responseLog.Dump(Application.persistentDataPath + "/" + _outputDir + "/Responses_linear_forward_" + startTime + ".txt",
                         "cond, starttime, targetd,  rotation, pitch, spinDir, inittarget, finaltarget, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });

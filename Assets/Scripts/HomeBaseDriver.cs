@@ -3,6 +3,7 @@ using UnityEngine.Video;
 using UnityEditor;
 using System;
 using UnityEngine.InputSystem;
+using System.IO;
 
 
 /**
@@ -11,20 +12,21 @@ using UnityEngine.InputSystem;
  * Copyright Michael Jenkin 2025, 2026
  * Version History
  * 
-* V3.06 - minor changes to menu structure/operation
- * V3.05 - version submitted to CSA in mid-March
- * V3.0 - updates after the 9th of March
- * V2.0 - Updates after the 17th of Feb
- * V1.8 - ensure output even if no user input (?)
- * V1.7 - updated triangle completion task
- * V1.6 - Modifications to run in the HMD
- * V1.5 - Now with manual start between conditions
- * V1.4 - better graphcis, getting ready for Android version
- * V1.3 - basically deal with everything except VR (and head tracking)
- * V1.2 - set up for new two task version
- * V1.1 - use a pointer for the final task rather than moving the point of view.
- *      - do some general cleanup in code style
- * V1.0 - based on the OSC software
+ *      V3.07 - put output in a directory to avoid problems with the pi bridge
+ *      V3.06 - minor changes to menu structure/operation
+ *      V3.05 - version submitted to CSA in mid-March
+ *      V3.0 - updates after the 9th of March
+ *      V2.0 - Updates after the 17th of Feb
+ *      V1.8 - ensure output even if no user input (?)
+ *      V1.7 - updated triangle completion task
+ *      V1.6 - Modifications to run in the HMD
+ *      V1.5 - Now with manual start between conditions
+ *      V1.4 - better graphcis, getting ready for Android version
+ *      V1.3 - basically deal with everything except VR (and head tracking)
+ *      V1.2 - set up for new two task version
+ *      V1.1 - use a pointer for the final task rather than moving the point of view.
+ *           - do some general cleanup in code style
+ *      V1.0 - based on the OSC software
  **/
 
 public class HomeBaseDriver : MonoBehaviour
@@ -38,6 +40,8 @@ public class HomeBaseDriver : MonoBehaviour
     public GameObject MovieScreen;
     public VideoClip TriangleTutorial;
     public VideoClip ComponentTutorial;
+
+    public string SAVEDIR = "hbsave"; 
 
     private const int NSPHERES = 3600;                     // number of spheres (12,000)
     private const float FLICKER_PROB = 0.001f;             // flicker probability (0.0001 originally)
@@ -65,12 +69,29 @@ public class HomeBaseDriver : MonoBehaviour
     {
         _startTime = (long)(DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds;
         topLevelMenu = GetComponent<TopLevelMenu>();
+        string path = Path.Combine(Application.persistentDataPath, SAVEDIR);
+        EnsureDirectoryExists(path);
 
 
         _sf = new SphereField(NSPHERES); // we regenerate locations as needed
         _sf.EnableHomeBaseDisplay();
         _doingMenu = true;
         Dialog.SetActive(true);
+    }
+
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        // Check if the directory does not exist
+        if (!Directory.Exists(directoryPath))
+        {
+            // If it doesn't exist, create it
+            Directory.CreateDirectory(directoryPath);
+            Debug.Log("Directory created: " + directoryPath);
+        }
+        else
+        {
+            Debug.Log("Directory already exists: " + directoryPath);
+        }
     }
 
     /**

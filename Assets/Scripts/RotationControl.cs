@@ -28,7 +28,8 @@ using UnityEditor;
  * For 3 x 2 x 2 = 12 conditions
  *
  * Version control
-*      V3.0 - version based on March 9th revisions
+*      V3.07 - put output in a directory to avoid problems with the pi bridge
+ *      V3.0 - version based on March 9th revisions
  *     V2.1 match the motion (rather than return to 0)
  *     V2.0 borrowed from the initial prototype version and modified as per the notes of the 17th
  *     V1.0 initial version from the monolith program
@@ -71,6 +72,7 @@ public class RotationControl : MonoBehaviour
     private const float TURN_STEP_MULTIPLIER = 1.01f;       // turn step multiplier
     private float _turnStep = MIN_TURN_STEP;                // step size for turn keypress (deg)
 
+    private string _outputDir;                              // output directory
     private Dialog _d;                                      // Dialog interface
     private GameObject _dialog;                             // Dialog Gameobject
     private GameObject _camera;
@@ -101,6 +103,7 @@ public class RotationControl : MonoBehaviour
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
         _dialog = driver.Dialog;
         _d = _dialog.GetComponent<Dialog>();
+        _outputDir = driver.SAVEDIR;
         _experimentState = ExperimentState.Initialize;
         _camera = GameObject.Find("Camera Holder");
         _reticle = driver.AdjustableTarget;
@@ -355,7 +358,7 @@ public class RotationControl : MonoBehaviour
                 if(_inputHandler.TriggerPressed) 
                 {
                     _responseLog.AddRotation(_cond, _turnStart, 180 - _turn, _pitch, _spinDir, _turnAngle);
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_rotation_" + startTime + "_" + _cond + ".txt");
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/" + _outputDir + "/HeadTracking_rotation_" + startTime + "_" + _cond + ".txt");
 
                     _reticle.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                     _reticle.transform.position = new Vector3(0.0f, 0.0f, RETICLE_DISTANCE);
@@ -370,7 +373,7 @@ public class RotationControl : MonoBehaviour
                     } 
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, rotation, pitch, spinDir, response, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
+                        _responseLog.Dump(Application.persistentDataPath + "/" + _outputDir + "/Responses_rotation_" + startTime + ".txt", "cond, starttime, rotation, pitch, spinDir, response, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _d.SetDialogElements("Completed", new string[] { "" });
                         _d.SetDialogInstructions("Press trigger to continue");
                         _dialog.SetActive(true);

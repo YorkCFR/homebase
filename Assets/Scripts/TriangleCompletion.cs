@@ -20,9 +20,10 @@ using UnityEditor;
  * - click when aligned
  *
  * Version History
- * V3.0 - version as of March 9th
- * V2.0 - major refactoring based on Feb decisions
- * V1.0 - from the monolithic version
+ *      V3.07 - put output in a directory to avoid problems with the pi bridge
+ *      V3.0 - version as of March 9th
+ *      V2.0 - major refactoring based on Feb decisions
+ *      V1.0 - from the monolithic version
  *
  * Copyright (c) Michael Jenkin 2025, 2026.
  **/
@@ -74,6 +75,7 @@ public class TriangleCompletion : MonoBehaviour
     private const float MOTION_STEP_MULTIPLIER = 1.1f;      // motion step multiplier
     private float _motionStep = MIN_MOTION_STEP;            // how big a step to make for a keypress (m)
 
+    private string _outputDir;                              // output directory
     private Dialog _d;                                      // Dialog interface
     private GameObject _reticle = null;
     private GameObject _target = null;
@@ -110,6 +112,7 @@ public class TriangleCompletion : MonoBehaviour
         _responseLog = new ResponseLog();
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
         _dialog = driver.Dialog;
+        _outputDir = driver.SAVEDIR;
         _d = _dialog.GetComponent<Dialog>();
         _experimentState = ExperimentState.Initialize;
         _camera = GameObject.Find("Camera Holder");
@@ -489,7 +492,7 @@ public class TriangleCompletion : MonoBehaviour
                 {
                     _reticle.SetActive(false);
                     _responseLog.AddTriangle(_cond, _backwardTime, _length1, 180.0f - _turn, _pitch, _spinDir, _length2, _directionDistanceInit, _directionDistance, _directionAngle);
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_triangle_completion_" + startTime + "_" + _cond + ".txt");
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/" + _outputDir + "/HeadTracking_triangle_completion_" + startTime + "_" + _cond + ".txt");
 
                     if (_cond < (NTRIANG + NPRACTICE - 1))
                     {
@@ -498,7 +501,7 @@ public class TriangleCompletion : MonoBehaviour
                     }
                     else
                     {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_triangle_" + startTime + ".txt", "cond, backTime, len1, angle, pitch, spinDir, len2, dirInit, dirFinal, angleFinal, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
+                        _responseLog.Dump(Application.persistentDataPath + "/" + _outputDir + "/Responses_triangle_" + startTime + ".txt", "cond, backTime, len1, angle, pitch, spinDir, len2, dirInit, dirFinal, angleFinal, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
                         _camera.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                         _d.SetDialogElements("Task completed", new string[] { "" });

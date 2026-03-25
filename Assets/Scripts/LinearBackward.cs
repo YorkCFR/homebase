@@ -31,6 +31,7 @@ using UnityEditor;
  *
  *
  * Version History
+ *      V3.07 - put output in a directory to avoid problems with the pi bridge
  *      V3.0 - updates based on the March 9th meeting
  *      V2.0 - updates based on Februady 17th meeting   
  *      V1.0 - With lots of code stolen in the refactoring process
@@ -75,12 +76,13 @@ public class LinearBackward : MonoBehaviour
     private const float TARGET_DISTANCE = 8.0f;             // only one target distance
     private const float TARGET_START_DIST = 0.05f;          // target starts this far from you
 
+    private string _outputDir;                              // output directory
     private Dialog _d;                                      // Dialog interface
     private GameObject _dialog;                             // Dialog Gameobject
-    private GameObject _camera;
-    private GameObject _reticle;
-    private GameObject _target;
-    private InputHandler _inputHandler;
+    private GameObject _camera;                             // Camera gameobject
+    private GameObject _reticle;                            // Reticle gameobject
+    private GameObject _target;                             // Moveable target gameobject
+    private InputHandler _inputHandler;                     // Input handler
     private ExperimentState _experimentState = ExperimentState.Initialize;    // current state of the experiment
     private ResponseLog _responseLog;                       // the response log
     private HeadTrackerLog _trackerLog;
@@ -109,6 +111,7 @@ public class LinearBackward : MonoBehaviour
         HomeBaseDriver driver = GetComponent<HomeBaseDriver>();
         _dialog = driver.Dialog;
         _d = _dialog.GetComponent<Dialog>();
+        _outputDir = driver.SAVEDIR;
         _experimentState = ExperimentState.Initialize;
         _camera = GameObject.Find("Camera Holder");
         _reticle = driver.AdjustableTarget;
@@ -343,7 +346,7 @@ public class LinearBackward : MonoBehaviour
                 if(_inputHandler.TriggerPressed) 
                 {
                     _responseLog.AddBackward(_cond, _waitStart, _distance, _pitch, _spinDir, _targetDistanceInit, _targetDistance); 
-                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/HeadTracking_linear_backward_" + startTime + "_" + _cond + ".txt");
+                    _trackerLog.StopRecordingAndSave(Application.persistentDataPath + "/" + _outputDir + "/HeadTracking_linear_backward_" + startTime + "_" + _cond + ".txt");
                     _reticle.SetActive(false);
 
                     _camera.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
@@ -356,7 +359,7 @@ public class LinearBackward : MonoBehaviour
                         _experimentState = ExperimentState.BeforeMotion;
                         Debug.Log($"going back for next condition {_cond}");
                     } else {
-                        _responseLog.Dump(Application.persistentDataPath + "/Responses_linear_backward_" + startTime + ".txt",
+                        _responseLog.Dump(Application.persistentDataPath + "/" + _outputDir + "/Responses_linear_backward_" + startTime + ".txt",
                             "cond, starttime, targetd,  pitch, spinDir, inittarget, finaltarget, cam pos x, cam pos y, cam pos z, cam rot x, cam rot y, cam rot z, cam rot w, reticle pos x, reticle pos y, reticle pos z, reticle rot x, reticle rot y, reticle rot z, reticle rot w");
                         Debug.Log($"Output is in {Application.persistentDataPath}");
                         _d.SetDialogElements("Completed", new string[] { "" });
